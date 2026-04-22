@@ -3,714 +3,389 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>KIUT — Student Attendance Management System</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<title>KIUT — Attendance Management System</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root {
-  /* KIUT Brand Colors */
-  --green-dark:  #0a3d1f;
-  --green:       #155c30;
-  --green-mid:   #1e7a42;
-  --green-light: #2a9e56;
-  --green-pale:  #e8f5ee;
+  --green-dark:  #072b16;
+  --green:       #0f5323;
+  --green-mid:   #1a7a38;
+  --green-light: #28a050;
+  --green-pale:  #eaf4ee;
+  --green-pale2: #d4eadb;
   --yellow:      #f5c518;
-  --yellow-dark: #d4a800;
+  --yellow-deep: #c49a0a;
   --yellow-pale: #fffbe6;
-  --black:       #0d0d0d;
-  --charcoal:    #1a1a1a;
-  --gray-dark:   #2e2e2e;
-  --gray:        #5a5a5a;
-  --gray-mid:    #8a8a8a;
-  --gray-light:  #d4d4d4;
+  --black:       #0a0a0a;
+  --charcoal:    #1c1c1c;
+  --gray-dk:     #3a3a3a;
+  --gray:        #606060;
+  --gray-md:     #909090;
+  --gray-lt:     #c8c8c8;
   --gray-pale:   #f0f0f0;
   --white:       #ffffff;
-  --surface:     #ffffff;
-  --border:      #dde8e1;
-  --bg:          #f4f7f5;
-
-  /* Semantic */
-  --accent:      var(--green);
-  --highlight:   var(--yellow);
-  --danger:      #c0392b;
+  --bg:          #f3f6f4;
+  --border:      #d8e4dc;
+  --danger:      #bf2b2b;
   --danger-pale: #fdecea;
-  --success:     var(--green-mid);
-  --warn:        #e07b00;
-  --warn-pale:   #fff4e5;
-
-  --shadow-sm: 0 1px 4px rgba(0,0,0,0.07);
-  --shadow:    0 2px 12px rgba(0,0,0,0.09);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,0.14);
+  --warn:        #d97706;
+  --warn-pale:   #fffaeb;
+  --info:        #1d6fa4;
+  --info-pale:   #e8f4fb;
+  --shadow-xs: 0 1px 3px rgba(0,0,0,0.07);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.09);
+  --shadow:    0 4px 16px rgba(0,0,0,0.11);
+  --shadow-lg: 0 10px 36px rgba(0,0,0,0.15);
   --radius: 10px;
+  --radius-sm: 6px;
 }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:14.5px;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--charcoal);min-height:100vh;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--gray-pale);}
+::-webkit-scrollbar-thumb{background:var(--green-light);border-radius:4px;}
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { font-size: 15px; }
-body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--charcoal); min-height: 100vh; }
+/* ══ LOGIN ══ */
+#login-screen{min-height:100vh;display:flex;background:var(--green-dark);}
+.login-left{
+  flex:1;display:flex;flex-direction:column;justify-content:center;
+  padding:70px 60px;position:relative;overflow:hidden;
+}
+.login-left::before{content:'';position:absolute;width:500px;height:500px;border-radius:50%;
+  border:80px solid rgba(245,197,24,0.07);bottom:-200px;left:-150px;}
+.login-left::after{content:'';position:absolute;width:300px;height:300px;border-radius:50%;
+  border:50px solid rgba(255,255,255,0.04);top:-100px;right:-50px;}
+.l-logo{font-family:'Playfair Display',serif;font-size:3.4rem;font-weight:800;color:#fff;line-height:1;letter-spacing:-0.03em;}
+.l-logo em{color:var(--yellow);font-style:normal;}
+.l-uni{color:rgba(255,255,255,0.4);font-size:0.72rem;letter-spacing:0.14em;text-transform:uppercase;margin:6px 0 40px;}
+.l-headline{font-size:1.6rem;font-weight:600;color:#fff;line-height:1.45;max-width:360px;margin-bottom:10px;}
+.l-headline em{color:var(--yellow);font-style:normal;}
+.l-desc{color:rgba(255,255,255,0.42);font-size:0.85rem;line-height:1.7;max-width:340px;}
+.l-divider{width:50px;height:3px;background:var(--yellow);border-radius:2px;margin:24px 0;}
 
-/* ─── SCROLLBAR ─── */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--gray-pale); }
-::-webkit-scrollbar-thumb { background: var(--green-light); border-radius: 4px; }
+.login-right{
+  width:480px;background:var(--white);display:flex;align-items:center;
+  justify-content:center;padding:50px 44px;
+  box-shadow:-20px 0 60px rgba(0,0,0,0.2);
+}
+.lf-wrap{width:100%;animation:fadeUp 0.45s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+.lf-title{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:var(--green-dark);margin-bottom:4px;}
+.lf-sub{color:var(--gray-md);font-size:0.8rem;margin-bottom:28px;}
+.lf-group{margin-bottom:15px;}
+.lf-group label{display:block;font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.09em;color:var(--gray);margin-bottom:5px;}
+.lf-group input,.lf-group select{
+  width:100%;background:var(--bg);border:1.5px solid var(--gray-lt);border-radius:7px;
+  color:var(--charcoal);padding:10px 13px;font-family:'Outfit',sans-serif;font-size:0.88rem;
+  outline:none;transition:border-color 0.14s,box-shadow 0.14s;
+}
+.lf-group input:focus,.lf-group select:focus{border-color:var(--green-mid);box-shadow:0 0 0 3px rgba(26,122,56,0.1);}
+.lf-submit{
+  width:100%;padding:12px;background:var(--green);border:none;border-radius:7px;color:#fff;
+  font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;cursor:pointer;
+  letter-spacing:0.02em;margin-top:4px;transition:all 0.14s;position:relative;overflow:hidden;
+}
+.lf-submit:hover{background:var(--green-mid);transform:translateY(-1px);box-shadow:0 4px 14px rgba(15,83,35,0.3);}
+.lf-submit::after{content:'';position:absolute;top:0;right:0;bottom:0;width:4px;background:var(--yellow);}
+.lf-err{color:var(--danger);font-size:0.78rem;margin-top:8px;text-align:center;font-weight:600;min-height:16px;}
+.lf-hint{margin-top:18px;padding:14px;background:var(--green-pale);border-radius:8px;border-left:4px solid var(--green-mid);}
+.lf-hint-title{font-size:0.65rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:var(--green);margin-bottom:8px;}
+.lf-hint-row{font-family:'JetBrains Mono',monospace;font-size:0.71rem;color:var(--gray);margin-bottom:3px;}
+.lf-hint-row strong{color:var(--green-dark);}
+@media(max-width:768px){.login-left{display:none;}.login-right{width:100%;box-shadow:none;}}
 
-/* ══════════════════════════════════════════
-   LOGIN
-══════════════════════════════════════════ */
-#login-screen {
-  min-height: 100vh;
-  display: flex;
-  background: var(--green-dark);
-  position: relative;
-  overflow: hidden;
-}
-.login-left {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 60px;
-  position: relative;
-  z-index: 2;
-}
-.login-left::after {
-  content: '';
-  position: absolute;
-  top: 0; right: -1px; bottom: 0;
-  width: 80px;
-  background: var(--bg);
-  clip-path: polygon(100% 0, 100% 100%, 0 100%);
-}
-.login-right {
-  width: 460px;
-  background: var(--bg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 48px 40px;
-  position: relative;
-}
-.kiut-wordmark {
-  font-family: 'Playfair Display', serif;
-  font-size: 3rem;
-  font-weight: 800;
-  color: var(--white);
-  line-height: 1;
-  margin-bottom: 4px;
-  letter-spacing: -0.02em;
-}
-.kiut-wordmark span { color: var(--yellow); }
-.kiut-full { color: rgba(255,255,255,0.55); font-size: 0.78rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 32px; }
-.kiut-tagline {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--white);
-  line-height: 1.4;
-  max-width: 380px;
-  margin-bottom: 12px;
-}
-.kiut-tagline span { color: var(--yellow); }
-.kiut-sub { color: rgba(255,255,255,0.45); font-size: 0.88rem; max-width: 340px; line-height: 1.6; }
-.login-geo {
-  position: absolute;
-  bottom: -120px; left: -120px;
-  width: 400px; height: 400px;
-  border-radius: 50%;
-  border: 60px solid rgba(245,197,24,0.08);
-}
-.login-geo2 {
-  position: absolute;
-  top: -60px; right: 120px;
-  width: 200px; height: 200px;
-  border-radius: 50%;
-  border: 30px solid rgba(255,255,255,0.05);
-}
-
-.login-form-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--green-dark);
-  margin-bottom: 4px;
-}
-.login-form-sub { color: var(--gray-mid); font-size: 0.82rem; margin-bottom: 28px; }
-.lf-group { margin-bottom: 16px; }
-.lf-group label { display: block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gray); margin-bottom: 6px; }
-.lf-group input, .lf-group select {
-  width: 100%;
-  background: var(--white);
-  border: 1.5px solid var(--gray-light);
-  border-radius: 8px;
-  color: var(--charcoal);
-  padding: 11px 14px;
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.9rem;
-  outline: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
-}
-.lf-group input:focus, .lf-group select:focus {
-  border-color: var(--green-mid);
-  box-shadow: 0 0 0 3px rgba(30,122,66,0.12);
-}
-.lf-group select option { background: #fff; }
-.login-submit {
-  width: 100%;
-  padding: 13px;
-  background: var(--green);
-  border: none;
-  border-radius: 8px;
-  color: var(--white);
-  font-family: 'Playfair Display', serif;
-  font-size: 1rem;
-  font-weight: 700;
-  cursor: pointer;
-  letter-spacing: 0.03em;
-  margin-top: 6px;
-  transition: background 0.15s, transform 0.1s;
-  position: relative;
-  overflow: hidden;
-}
-.login-submit::after {
-  content: '';
-  position: absolute;
-  top: 0; right: 0; bottom: 0;
-  width: 4px;
-  background: var(--yellow);
-}
-.login-submit:hover { background: var(--green-mid); transform: translateY(-1px); }
-.login-error { color: var(--danger); font-size: 0.8rem; margin-top: 10px; text-align: center; min-height: 18px; font-weight: 600; }
-.login-hint {
-  margin-top: 20px;
-  padding: 14px;
-  background: var(--green-pale);
-  border-radius: 8px;
-  border-left: 4px solid var(--green-mid);
-}
-.login-hint-title { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--green); margin-bottom: 8px; }
-.login-hint-row { font-family: 'JetBrains Mono', monospace; font-size: 0.74rem; color: var(--gray); margin-bottom: 3px; }
-.login-hint-row strong { color: var(--green-dark); }
-
-@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-.login-right { animation: fadeUp 0.5s ease; }
-
-@media (max-width: 768px) {
-  .login-left { display: none; }
-  .login-right { width: 100%; padding: 36px 24px; }
-  #login-screen { justify-content: center; background: var(--bg); }
-}
-
-/* ══════════════════════════════════════════
-   APP SHELL
-══════════════════════════════════════════ */
-#app-shell { display: none; min-height: 100vh; }
+/* ══ APP SHELL ══ */
+#app-shell{display:none;min-height:100vh;flex-direction:column;}
 
 /* TOPBAR */
-.topbar {
-  height: 62px;
-  background: var(--green-dark);
-  display: flex;
-  align-items: center;
-  padding: 0 28px;
-  gap: 0;
-  position: sticky;
-  top: 0;
-  z-index: 200;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.18);
+.topbar{
+  height:58px;background:var(--green-dark);display:flex;align-items:center;
+  padding:0 24px;gap:0;position:sticky;top:0;z-index:300;
+  box-shadow:0 2px 20px rgba(0,0,0,0.22);
 }
-.topbar-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-right: 32px;
-  text-decoration: none;
+.tb-brand{display:flex;align-items:center;gap:10px;margin-right:28px;}
+.tb-mark{
+  width:36px;height:36px;background:var(--yellow);border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Playfair Display',serif;font-weight:800;font-size:1.05rem;
+  color:var(--green-dark);box-shadow:0 2px 8px rgba(0,0,0,0.2);flex-shrink:0;
 }
-.topbar-logo-mark {
-  width: 38px; height: 38px;
-  background: var(--yellow);
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Playfair Display', serif;
-  font-weight: 800;
-  font-size: 1.1rem;
-  color: var(--green-dark);
-  flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+.tb-name{font-family:'Playfair Display',serif;font-weight:700;font-size:1rem;color:#fff;}
+.tb-name em{color:var(--yellow);font-style:normal;}
+.tb-nav{display:flex;gap:2px;flex:1;overflow-x:auto;}
+.tb-nav::-webkit-scrollbar{height:0;}
+.tb-btn{
+  padding:6px 14px;background:transparent;border:none;border-radius:5px;
+  color:rgba(255,255,255,0.5);font-family:'Outfit',sans-serif;font-size:0.8rem;
+  font-weight:600;letter-spacing:0.02em;cursor:pointer;transition:all 0.13s;
+  white-space:nowrap;position:relative;
 }
-.topbar-brand-text { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.05rem; color: var(--white); letter-spacing: 0.01em; }
-.topbar-brand-text span { color: var(--yellow); }
-
-.topbar-nav { display: flex; gap: 2px; flex: 1; }
-.topbar-btn {
-  padding: 7px 16px;
-  background: transparent;
-  border: none;
-  border-radius: 6px;
-  color: rgba(255,255,255,0.55);
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.82rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  cursor: pointer;
-  transition: all 0.14s;
-  position: relative;
-}
-.topbar-btn:hover { background: rgba(255,255,255,0.08); color: var(--white); }
-.topbar-btn.active {
-  background: rgba(245,197,24,0.15);
-  color: var(--yellow);
-}
-.topbar-btn.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 12px; right: 12px;
-  height: 2px;
-  background: var(--yellow);
-  border-radius: 2px 2px 0 0;
-}
-
-.topbar-right { display: flex; align-items: center; gap: 12px; margin-left: auto; }
-.role-chip {
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-.role-admin   { background: rgba(245,197,24,0.2); color: var(--yellow); border: 1px solid rgba(245,197,24,0.35); }
-.role-teacher { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.8); border: 1px solid rgba(255,255,255,0.2); }
-.role-student { background: rgba(42,158,86,0.25); color: #7ee0a4; border: 1px solid rgba(42,158,86,0.4); }
-.top-user { color: rgba(255,255,255,0.65); font-size: 0.82rem; font-weight: 500; }
-.logout-btn {
-  background: transparent;
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 6px;
-  color: rgba(255,255,255,0.55);
-  padding: 6px 14px;
-  font-size: 0.78rem;
-  font-family: 'Outfit', sans-serif;
-  cursor: pointer;
-  transition: all 0.13s;
-}
-.logout-btn:hover { background: rgba(192,57,43,0.3); color: #fff; border-color: rgba(192,57,43,0.5); }
+.tb-btn:hover{background:rgba(255,255,255,0.07);color:#fff;}
+.tb-btn.active{color:var(--yellow);}
+.tb-btn.active::after{content:'';position:absolute;bottom:0;left:10px;right:10px;height:2px;background:var(--yellow);border-radius:2px 2px 0 0;}
+.tb-right{display:flex;align-items:center;gap:10px;margin-left:auto;flex-shrink:0;}
+.role-chip{padding:3px 11px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:0.67rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;}
+.rc-dean{background:rgba(245,197,24,0.2);color:var(--yellow);border:1px solid rgba(245,197,24,0.4);}
+.rc-hod{background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.85);border:1px solid rgba(255,255,255,0.2);}
+.rc-teacher{background:rgba(40,160,80,0.25);color:#7edea0;border:1px solid rgba(40,160,80,0.4);}
+.rc-student{background:rgba(29,111,164,0.25);color:#80c6ed;border:1px solid rgba(29,111,164,0.4);}
+.tb-user{color:rgba(255,255,255,0.6);font-size:0.79rem;font-weight:500;}
+.tb-logout{background:transparent;border:1px solid rgba(255,255,255,0.18);border-radius:5px;color:rgba(255,255,255,0.5);padding:5px 12px;font-size:0.76rem;font-family:'Outfit',sans-serif;cursor:pointer;transition:all 0.13s;}
+.tb-logout:hover{background:rgba(191,43,43,0.35);color:#fff;border-color:rgba(191,43,43,0.5);}
 
 /* CONTENT */
-.content { max-width: 1300px; margin: 0 auto; padding: 30px 28px; }
-.page { display: none; }
-.page.active { display: block; animation: fadeIn 0.22s ease; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.content{max-width:1380px;margin:0 auto;padding:26px 24px;}
+.page{display:none;}
+.page.active{display:block;animation:fadeIn 0.2s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
 
 /* PAGE HEADER */
-.page-header { margin-bottom: 26px; display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-.page-header-left {}
-.page-title { font-family: 'Playfair Display', serif; font-size: 1.75rem; font-weight: 700; color: var(--green-dark); letter-spacing: -0.02em; }
-.page-title span { color: var(--green-mid); }
-.page-sub { color: var(--gray-mid); font-size: 0.84rem; margin-top: 4px; }
-.page-badge {
-  padding: 6px 18px;
-  background: var(--yellow);
-  border-radius: 20px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: var(--green-dark);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
+.ph{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:24px;}
+.ph-left{}
+.ph-title{font-family:'Playfair Display',serif;font-size:1.65rem;font-weight:700;color:var(--green-dark);letter-spacing:-0.02em;}
+.ph-title em{color:var(--green-mid);font-style:normal;}
+.ph-sub{color:var(--gray-md);font-size:0.81rem;margin-top:3px;}
+.ph-badge{padding:5px 16px;border-radius:20px;background:var(--yellow);color:var(--green-dark);font-family:'JetBrains Mono',monospace;font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;white-space:nowrap;align-self:flex-start;margin-top:4px;}
 
 /* CARDS */
-.card {
-  background: var(--white);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius);
-  padding: 22px;
-  margin-bottom: 20px;
-  box-shadow: var(--shadow-sm);
-  transition: box-shadow 0.15s;
-}
-.card:hover { box-shadow: var(--shadow); }
-.card-header {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 18px; flex-wrap: wrap; gap: 10px;
-}
-.card-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--green-dark);
-  display: flex; align-items: center; gap: 10px;
-}
-.card-icon {
-  width: 30px; height: 30px;
-  border-radius: 7px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.9rem;
-  flex-shrink: 0;
-}
-.ci-green  { background: var(--green-pale); }
-.ci-yellow { background: var(--yellow-pale); }
-.ci-dark   { background: var(--charcoal); color: var(--yellow); }
+.card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:18px;box-shadow:var(--shadow-xs);transition:box-shadow 0.15s;}
+.card:hover{box-shadow:var(--shadow-sm);}
+.ch{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;}
+.ct{font-family:'Playfair Display',serif;font-size:0.95rem;font-weight:700;color:var(--green-dark);display:flex;align-items:center;gap:9px;}
+.ci{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.88rem;flex-shrink:0;}
+.ci-g{background:var(--green-pale);}
+.ci-y{background:var(--yellow-pale);}
+.ci-b{background:#e8f4fb;}
+.ci-k{background:var(--charcoal);color:var(--yellow);}
 
-/* STAT CARDS */
-.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 16px; margin-bottom: 26px; }
-.stat-box {
-  background: var(--white);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius);
-  padding: 20px;
-  box-shadow: var(--shadow-sm);
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.15s, box-shadow 0.15s;
-}
-.stat-box:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
-.stat-box::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 4px;
-  border-radius: var(--radius) var(--radius) 0 0;
-}
-.sb-green::before  { background: linear-gradient(90deg, var(--green), var(--green-light)); }
-.sb-yellow::before { background: linear-gradient(90deg, var(--yellow-dark), var(--yellow)); }
-.sb-black::before  { background: linear-gradient(90deg, var(--black), var(--gray-dark)); }
-.sb-warn::before   { background: linear-gradient(90deg, var(--danger), #e74c3c); }
-.stat-value {
-  font-family: 'Playfair Display', serif;
-  font-size: 2.2rem;
-  font-weight: 700;
-  color: var(--green-dark);
-  line-height: 1;
-  margin-bottom: 6px;
-}
-.stat-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gray-mid); }
-.stat-icon { font-size: 1.3rem; margin-bottom: 10px; }
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:14px;margin-bottom:22px;}
+.sbox{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow-xs);position:relative;overflow:hidden;transition:all 0.15s;cursor:default;}
+.sbox:hover{transform:translateY(-2px);box-shadow:var(--shadow-sm);}
+.sbox::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--radius) var(--radius) 0 0;}
+.sb-g::before{background:linear-gradient(90deg,var(--green),var(--green-light));}
+.sb-y::before{background:linear-gradient(90deg,var(--yellow-deep),var(--yellow));}
+.sb-k::before{background:linear-gradient(90deg,var(--charcoal),var(--gray-dk));}
+.sb-d::before{background:linear-gradient(90deg,var(--danger),#e05252);}
+.sb-b::before{background:linear-gradient(90deg,var(--info),#3897cc);}
+.sbox-icon{font-size:1.2rem;margin-bottom:8px;}
+.sbox-val{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--green-dark);line-height:1;margin-bottom:4px;}
+.sbox-lbl{font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--gray-md);}
 
 /* FORMS */
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.form-grid.cols3 { grid-template-columns: 1fr 1fr 1fr; }
-.form-group { display: flex; flex-direction: column; gap: 5px; }
-.form-group.full { grid-column: 1/-1; }
-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gray); }
-input, select, textarea {
-  background: var(--white);
-  border: 1.5px solid var(--gray-light);
-  border-radius: 7px;
-  color: var(--charcoal);
-  padding: 9px 13px;
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.88rem;
-  outline: none;
-  transition: border-color 0.14s, box-shadow 0.14s;
-  width: 100%;
+.fg{display:grid;gap:12px;}
+.fg-2{grid-template-columns:1fr 1fr;}
+.fg-3{grid-template-columns:1fr 1fr 1fr;}
+.fg-4{grid-template-columns:1fr 1fr 1fr 1fr;}
+.fgroup{display:flex;flex-direction:column;gap:4px;}
+.fgroup.span2{grid-column:span 2;}
+.fgroup.span3{grid-column:span 3;}
+.fgroup.span4{grid-column:1/-1;}
+label{font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--gray);}
+input,select,textarea{
+  background:var(--bg);border:1.5px solid var(--gray-lt);border-radius:var(--radius-sm);
+  color:var(--charcoal);padding:8px 12px;font-family:'Outfit',sans-serif;font-size:0.86rem;
+  outline:none;transition:border-color 0.14s,box-shadow 0.14s;width:100%;
 }
-input:focus, select:focus, textarea:focus {
-  border-color: var(--green-mid);
-  box-shadow: 0 0 0 3px rgba(30,122,66,0.1);
-}
-textarea { resize: vertical; min-height: 70px; }
-.form-actions { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+input:focus,select:focus,textarea:focus{border-color:var(--green-mid);box-shadow:0 0 0 3px rgba(26,122,56,0.1);background:var(--white);}
+textarea{resize:vertical;min-height:68px;}
+.fa{display:flex;gap:9px;margin-top:16px;flex-wrap:wrap;}
 
 /* BUTTONS */
-.btn {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 9px 20px;
-  border-radius: 7px; border: none;
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.82rem; font-weight: 700;
-  letter-spacing: 0.02em;
-  cursor: pointer;
-  transition: all 0.13s;
-  white-space: nowrap;
-}
-.btn-primary {
-  background: var(--green);
-  color: var(--white);
-  box-shadow: 0 2px 8px rgba(21,92,48,0.25);
-}
-.btn-primary:hover { background: var(--green-mid); transform: translateY(-1px); }
-.btn-yellow {
-  background: var(--yellow);
-  color: var(--green-dark);
-  font-weight: 800;
-  box-shadow: 0 2px 8px rgba(212,168,0,0.3);
-}
-.btn-yellow:hover { background: var(--yellow-dark); color: var(--white); }
-.btn-dark { background: var(--charcoal); color: var(--yellow); }
-.btn-dark:hover { background: var(--black); }
-.btn-ghost { background: transparent; border: 1.5px solid var(--border); color: var(--charcoal); }
-.btn-ghost:hover { background: var(--green-pale); border-color: var(--green-mid); color: var(--green); }
-.btn-danger { background: var(--danger); color: var(--white); }
-.btn-danger:hover { opacity: 0.85; }
-.btn-sm { padding: 6px 13px; font-size: 0.76rem; }
-.btn-icon { padding: 6px 9px; }
+.btn{display:inline-flex;align-items:center;gap:5px;padding:8px 18px;border-radius:var(--radius-sm);border:none;font-family:'Outfit',sans-serif;font-size:0.8rem;font-weight:700;letter-spacing:0.02em;cursor:pointer;transition:all 0.13s;white-space:nowrap;}
+.btn-primary{background:var(--green);color:#fff;box-shadow:0 2px 8px rgba(15,83,35,0.22);}
+.btn-primary:hover{background:var(--green-mid);transform:translateY(-1px);}
+.btn-yellow{background:var(--yellow);color:var(--green-dark);font-weight:800;}
+.btn-yellow:hover{background:var(--yellow-deep);color:#fff;}
+.btn-dark{background:var(--charcoal);color:var(--yellow);}
+.btn-dark:hover{background:var(--black);}
+.btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--charcoal);}
+.btn-ghost:hover{background:var(--green-pale);border-color:var(--green-mid);color:var(--green);}
+.btn-danger{background:var(--danger);color:#fff;}
+.btn-danger:hover{opacity:0.85;}
+.btn-info{background:var(--info);color:#fff;}
+.btn-info:hover{opacity:0.85;}
+.btn-sm{padding:5px 11px;font-size:0.74rem;}
+.btn-xs{padding:3px 8px;font-size:0.7rem;}
+.btn-icon{padding:5px 8px;}
 
 /* TABLES */
-.table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1.5px solid var(--border); }
-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
-thead tr { background: var(--green-dark); }
-th {
-  padding: 11px 15px;
-  text-align: left;
-  font-size: 0.68rem;
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
-  color: rgba(255,255,255,0.75);
-  font-weight: 700;
-  border-bottom: none;
-}
-th:first-child { border-radius: var(--radius) 0 0 0; }
-th:last-child  { border-radius: 0 var(--radius) 0 0; }
-td { padding: 10px 15px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-tr:last-child td { border-bottom: none; }
-tbody tr:hover td { background: var(--green-pale); }
-.empty-row td { text-align: center; color: var(--gray-mid); padding: 30px; font-style: italic; }
+.tw{overflow-x:auto;border-radius:var(--radius);border:1.5px solid var(--border);}
+table{width:100%;border-collapse:collapse;font-size:0.82rem;}
+thead tr{background:var(--green-dark);}
+th{padding:10px 14px;text-align:left;font-size:0.66rem;text-transform:uppercase;letter-spacing:0.09em;color:rgba(255,255,255,0.75);font-weight:700;}
+td{padding:9px 14px;border-bottom:1px solid var(--border);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tbody tr:hover td{background:var(--green-pale);}
+.er td{text-align:center;color:var(--gray-md);padding:28px;font-style:italic;}
 
 /* BADGES */
-.badge {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 3px 10px;
-  border-radius: 20px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.72rem; font-weight: 600;
-}
-.badge-admin   { background: rgba(212,168,0,0.15); color: var(--yellow-dark); border: 1px solid rgba(212,168,0,0.3); }
-.badge-teacher { background: var(--green-pale); color: var(--green); border: 1px solid rgba(30,122,66,0.25); }
-.badge-student { background: var(--green-pale); color: var(--green-dark); border: 1px solid rgba(21,92,48,0.2); }
-.badge-green   { background: var(--green-pale); color: var(--green); border: 1px solid rgba(30,122,66,0.25); }
-.badge-red     { background: var(--danger-pale); color: var(--danger); border: 1px solid rgba(192,57,43,0.2); }
-.badge-yellow  { background: var(--yellow-pale); color: var(--yellow-dark); border: 1px solid rgba(212,168,0,0.3); }
-.badge-gray    { background: var(--gray-pale); color: var(--gray); }
-.badge-module  { background: var(--green-dark); color: var(--yellow); border: none; font-size: 0.7rem; padding: 3px 9px; }
-
-/* ATTENDANCE ROWS */
-.att-list { display: flex; flex-direction: column; gap: 8px; max-height: 440px; overflow-y: auto; padding-right: 4px; }
-.att-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 14px;
-  background: var(--bg);
-  border: 1.5px solid var(--border);
-  border-radius: 8px;
-  transition: all 0.13s;
-}
-.att-row.marked-P { border-color: var(--green-mid); background: var(--green-pale); }
-.att-row.marked-A { border-color: var(--danger); background: var(--danger-pale); }
-.att-name { font-weight: 600; font-size: 0.88rem; color: var(--charcoal); }
-.att-reg  { font-family: 'JetBrains Mono', monospace; font-size: 0.71rem; color: var(--gray-mid); }
-.att-btns { display: flex; gap: 6px; }
-.att-btn {
-  width: 36px; height: 36px;
-  border-radius: 7px;
-  border: 2px solid var(--gray-light);
-  background: var(--white);
-  cursor: pointer;
-  font-weight: 800;
-  font-size: 0.8rem;
-  transition: all 0.12s;
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Outfit', sans-serif;
-}
-.att-btn.P { color: var(--green); }
-.att-btn.P.sel { background: var(--green); color: var(--white); border-color: var(--green); box-shadow: 0 2px 6px rgba(21,92,48,0.3); }
-.att-btn.A { color: var(--danger); }
-.att-btn.A.sel { background: var(--danger); color: var(--white); border-color: var(--danger); }
-
-/* PROGRESS BAR */
-.pbar { height: 5px; background: var(--gray-light); border-radius: 3px; overflow: hidden; margin-top: 4px; width: 80px; }
-.pfill { height: 100%; border-radius: 3px; transition: width 0.4s; }
-.pfill-g { background: linear-gradient(90deg, var(--green), var(--green-light)); }
-.pfill-y { background: linear-gradient(90deg, var(--yellow-dark), var(--yellow)); }
-.pfill-r { background: linear-gradient(90deg, var(--danger), #e74c3c); }
-.pct-val { font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.88rem; }
-
-/* MODULE CARDS */
-.module-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
-.module-card {
-  background: var(--white);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius);
-  padding: 20px;
-  cursor: pointer;
-  transition: all 0.15s;
-  position: relative;
-  overflow: hidden;
-}
-.module-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0;
-  width: 5px;
-  height: 100%;
-  background: linear-gradient(180deg, var(--green), var(--green-light));
-}
-.module-card::after {
-  content: '';
-  position: absolute;
-  top: 0; right: 0;
-  width: 60px; height: 60px;
-  background: var(--yellow);
-  opacity: 0.06;
-  border-radius: 50%;
-  transform: translate(20px, -20px);
-}
-.module-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-3px); border-color: var(--green-mid); }
-.module-card-code { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--green-mid); font-weight: 600; margin-bottom: 5px; }
-.module-card-name { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 0.98rem; color: var(--green-dark); margin-bottom: 10px; line-height: 1.3; }
-.module-card-meta { font-size: 0.77rem; color: var(--gray); display: flex; gap: 12px; flex-wrap: wrap; }
-
-/* STUDENT PORTAL */
-.student-module-card {
-  background: var(--white);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius);
-  padding: 22px;
-  box-shadow: var(--shadow-sm);
-  margin-bottom: 16px;
-  position: relative;
-  overflow: hidden;
-  transition: box-shadow 0.15s;
-}
-.student-module-card:hover { box-shadow: var(--shadow); }
-.student-module-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 5px;
-}
-.smc-eligible::before { background: linear-gradient(90deg, var(--green), var(--green-light)); }
-.smc-not-eligible::before { background: linear-gradient(90deg, var(--danger), #e74c3c); }
-.smc-neutral::before { background: linear-gradient(90deg, var(--yellow-dark), var(--yellow)); }
-.smc-code { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--green-mid); font-weight: 600; }
-.smc-name { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.05rem; color: var(--green-dark); margin-top: 2px; }
-.smc-teacher { font-size: 0.78rem; color: var(--gray-mid); margin-top: 3px; }
-.big-pct { font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: 700; line-height: 1; }
-.smc-bar { height: 8px; background: var(--gray-light); border-radius: 4px; overflow: hidden; margin-top: 10px; }
-.smc-stats { font-size: 0.78rem; color: var(--gray); margin-top: 8px; display: flex; gap: 18px; flex-wrap: wrap; }
+.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 9px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:0.69rem;font-weight:600;}
+.b-green{background:var(--green-pale);color:var(--green);border:1px solid rgba(26,122,56,0.25);}
+.b-yellow{background:var(--yellow-pale);color:var(--yellow-deep);border:1px solid rgba(196,154,10,0.3);}
+.b-red{background:var(--danger-pale);color:var(--danger);border:1px solid rgba(191,43,43,0.2);}
+.b-gray{background:var(--gray-pale);color:var(--gray);}
+.b-info{background:var(--info-pale);color:var(--info);border:1px solid rgba(29,111,164,0.2);}
+.b-dark{background:var(--green-dark);color:var(--yellow);font-size:0.67rem;}
+.b-warn{background:var(--warn-pale);color:var(--warn);border:1px solid rgba(217,119,6,0.25);}
 
 /* TABS */
-.tab-row { display: flex; gap: 0; margin-bottom: 0; border-bottom: 2px solid var(--border); overflow-x: auto; }
-.tab-btn {
-  padding: 9px 18px;
-  border: none; background: transparent;
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.82rem; font-weight: 700;
-  color: var(--gray-mid);
-  cursor: pointer;
-  border-bottom: 3px solid transparent;
-  margin-bottom: -2px;
-  transition: all 0.13s;
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-}
-.tab-btn:hover { color: var(--green); background: var(--green-pale); }
-.tab-btn.active { color: var(--green-dark); border-bottom-color: var(--green-mid); background: var(--green-pale); }
-.tab-pane { display: none; padding-top: 20px; }
-.tab-pane.active { display: block; }
+.tab-row{display:flex;gap:0;border-bottom:2px solid var(--border);overflow-x:auto;margin-bottom:0;}
+.tab-row::-webkit-scrollbar{height:0;}
+.tab-btn{padding:8px 17px;border:none;background:transparent;font-family:'Outfit',sans-serif;font-size:0.79rem;font-weight:700;color:var(--gray-md);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all 0.13s;letter-spacing:0.02em;white-space:nowrap;}
+.tab-btn:hover{color:var(--green);background:var(--green-pale);}
+.tab-btn.active{color:var(--green-dark);border-bottom-color:var(--green-mid);background:var(--green-pale);}
+.tab-pane{display:none;padding-top:18px;}
+.tab-pane.active{display:block;}
+
+/* ATTENDANCE */
+.att-list{display:flex;flex-direction:column;gap:7px;max-height:420px;overflow-y:auto;padding-right:3px;}
+.att-row{display:flex;align-items:center;justify-content:space-between;padding:9px 13px;background:var(--bg);border:1.5px solid var(--border);border-radius:7px;transition:all 0.12s;}
+.att-row.mk-P{border-color:var(--green-mid);background:var(--green-pale);}
+.att-row.mk-A{border-color:var(--danger);background:var(--danger-pale);}
+.att-name{font-weight:600;font-size:0.86rem;}
+.att-reg{font-family:'JetBrains Mono',monospace;font-size:0.69rem;color:var(--gray-md);}
+.att-btns{display:flex;gap:5px;}
+.att-btn{width:34px;height:34px;border-radius:6px;border:2px solid var(--gray-lt);background:var(--white);cursor:pointer;font-weight:800;font-size:0.78rem;transition:all 0.11s;display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;}
+.att-btn.P{color:var(--green);}
+.att-btn.P.sel{background:var(--green);color:#fff;border-color:var(--green);box-shadow:0 2px 6px rgba(15,83,35,0.28);}
+.att-btn.A{color:var(--danger);}
+.att-btn.A.sel{background:var(--danger);color:#fff;border-color:var(--danger);}
+
+/* PROGRESS */
+.pbar{height:5px;background:var(--gray-lt);border-radius:3px;overflow:hidden;margin-top:3px;width:78px;}
+.pf{height:100%;border-radius:3px;transition:width 0.4s;}
+.pf-g{background:linear-gradient(90deg,var(--green),var(--green-light));}
+.pf-y{background:linear-gradient(90deg,var(--yellow-deep),var(--yellow));}
+.pf-r{background:linear-gradient(90deg,var(--danger),#e05252);}
+.pct-v{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:0.85rem;}
+
+/* MODULE CARDS */
+.mod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:14px;}
+.mod-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:18px;cursor:pointer;transition:all 0.15s;position:relative;overflow:hidden;}
+.mod-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:linear-gradient(180deg,var(--green),var(--green-light));}
+.mod-card:hover{box-shadow:var(--shadow);transform:translateY(-2px);border-color:var(--green-mid);}
+.mc-code{font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--green-mid);font-weight:600;margin-bottom:4px;}
+.mc-name{font-family:'Playfair Display',serif;font-weight:700;font-size:0.95rem;color:var(--green-dark);margin-bottom:8px;line-height:1.3;}
+.mc-meta{font-size:0.74rem;color:var(--gray);display:flex;gap:10px;flex-wrap:wrap;}
+
+/* STUDENT PORTAL CARDS */
+.sp-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:15px;position:relative;overflow:hidden;box-shadow:var(--shadow-xs);}
+.sp-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;}
+.sp-elig::before{background:linear-gradient(90deg,var(--green),var(--green-light));}
+.sp-noelig::before{background:linear-gradient(90deg,var(--danger),#e05252);}
+.sp-neutral::before{background:linear-gradient(90deg,var(--yellow-deep),var(--yellow));}
+.sp-code{font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--green-mid);font-weight:600;}
+.sp-name{font-family:'Playfair Display',serif;font-weight:700;font-size:1rem;color:var(--green-dark);margin-top:2px;}
+.sp-teacher{font-size:0.75rem;color:var(--gray-md);margin-top:3px;}
+.sp-pct{font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:700;line-height:1;}
+.sp-bar{height:7px;background:var(--gray-lt);border-radius:4px;overflow:hidden;margin-top:9px;}
+.sp-stats{font-size:0.75rem;color:var(--gray);margin-top:7px;display:flex;gap:16px;flex-wrap:wrap;}
 
 /* MODAL */
-.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(10,61,31,0.45); z-index: 300; align-items: center; justify-content: center; }
-.modal-overlay.open { display: flex; }
-.modal {
-  background: var(--white);
-  border: 1.5px solid var(--border);
-  border-radius: 14px;
-  padding: 30px;
-  width: 540px; max-width: 96vw;
-  max-height: 90vh; overflow-y: auto;
-  box-shadow: var(--shadow-lg);
-  animation: fadeUp 0.2s ease;
-  border-top: 5px solid var(--green);
-}
-.modal-title { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; color: var(--green-dark); margin-bottom: 20px; }
-.modal-actions { display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end; }
+.mo{display:none;position:fixed;inset:0;background:rgba(7,43,22,0.5);z-index:500;align-items:center;justify-content:center;}
+.mo.open{display:flex;}
+.mo-box{background:var(--white);border:1.5px solid var(--border);border-radius:13px;padding:28px;width:560px;max-width:96vw;max-height:92vh;overflow-y:auto;box-shadow:var(--shadow-lg);animation:fadeUp 0.2s ease;border-top:4px solid var(--green);}
+.mo-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--green-dark);margin-bottom:18px;}
+.mo-actions{display:flex;gap:9px;margin-top:18px;justify-content:flex-end;}
+
+/* UPLOAD BOX */
+.upload-box{border:2px dashed var(--green-light);border-radius:var(--radius);padding:32px;text-align:center;cursor:pointer;transition:all 0.15s;background:var(--green-pale);position:relative;}
+.upload-box:hover{border-color:var(--green);background:var(--green-pale2);}
+.upload-box input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.upload-icon{font-size:2.2rem;margin-bottom:10px;}
+.upload-title{font-weight:700;color:var(--green-dark);font-size:0.95rem;margin-bottom:4px;}
+.upload-sub{color:var(--gray-md);font-size:0.78rem;}
+
+/* EXCEL PREVIEW */
+.xls-preview{margin-top:14px;border-radius:var(--radius);border:1.5px solid var(--border);overflow:hidden;}
+.xls-header{background:var(--green-dark);color:#fff;padding:8px 14px;font-size:0.75rem;font-weight:700;display:flex;align-items:center;gap:8px;}
+.xls-count{background:var(--yellow);color:var(--green-dark);border-radius:12px;padding:1px 8px;font-size:0.7rem;font-weight:800;}
+
+/* TWO/THREE COL */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;}
+.g13{display:grid;grid-template-columns:1fr 2.5fr;gap:18px;}
 
 /* SEPARATOR */
-.sep { border: none; border-top: 1.5px solid var(--border); margin: 20px 0; }
+.sep{border:none;border-top:1.5px solid var(--border);margin:18px 0;}
 
-/* TWO-COL */
-.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+/* BREADCRUMB */
+.bc{display:flex;align-items:center;gap:6px;font-size:0.76rem;color:var(--gray-md);margin-bottom:18px;flex-wrap:wrap;}
+.bc a,.bc span.link{color:var(--green-mid);cursor:pointer;font-weight:600;}
+.bc a:hover,.bc span.link:hover{text-decoration:underline;}
+.bc-sep{color:var(--gray-lt);}
 
 /* TOAST */
-#toast-box { position: fixed; bottom: 22px; right: 22px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
-.toast {
-  padding: 12px 18px;
-  border-radius: 8px;
-  font-size: 0.83rem; font-weight: 700;
-  font-family: 'Outfit', sans-serif;
-  animation: fadeUp 0.2s ease;
-  box-shadow: var(--shadow-lg);
-  max-width: 280px;
-  border-left: 4px solid transparent;
-}
-.toast-ok   { background: var(--green-pale); color: var(--green-dark); border-left-color: var(--green-mid); }
-.toast-err  { background: var(--danger-pale); color: var(--danger); border-left-color: var(--danger); }
-.toast-info { background: var(--yellow-pale); color: var(--yellow-dark); border-left-color: var(--yellow-dark); }
+#toast-box{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:7px;}
+.toast{padding:11px 16px;border-radius:7px;font-size:0.8rem;font-weight:700;font-family:'Outfit',sans-serif;animation:fadeUp 0.2s ease;box-shadow:var(--shadow);max-width:290px;border-left:4px solid transparent;}
+.t-ok{background:var(--green-pale);color:var(--green-dark);border-left-color:var(--green-mid);}
+.t-err{background:var(--danger-pale);color:var(--danger);border-left-color:var(--danger);}
+.t-info{background:var(--yellow-pale);color:var(--yellow-deep);border-left-color:var(--yellow-deep);}
 
-/* KIUT FOOTER STRIP */
-.kiut-strip {
-  height: 4px;
-  background: linear-gradient(90deg, var(--green-dark) 0%, var(--green-mid) 40%, var(--yellow) 60%, var(--yellow-dark) 100%);
-  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
-}
+/* KIUT STRIP */
+.kiut-strip{height:4px;background:linear-gradient(90deg,var(--green-dark) 0%,var(--green-mid) 35%,var(--yellow) 65%,var(--yellow-deep) 100%);position:fixed;bottom:0;left:0;right:0;z-index:200;}
 
-/* RESPONSIVE */
-@media (max-width: 900px) {
-  .two-col { grid-template-columns: 1fr; }
-  .form-grid.cols3 { grid-template-columns: 1fr 1fr; }
-}
-@media (max-width: 600px) {
-  .form-grid { grid-template-columns: 1fr; }
-  .form-grid.cols3 { grid-template-columns: 1fr; }
-  .stats-row { grid-template-columns: 1fr 1fr; }
-  .content { padding: 20px 14px; }
-  .topbar { padding: 0 14px; }
-  .topbar-nav { display: none; }
-  .top-user { display: none; }
-}
+/* ALERTS */
+.alert{padding:12px 16px;border-radius:var(--radius-sm);font-size:0.82rem;font-weight:500;margin-bottom:14px;display:flex;align-items:flex-start;gap:10px;}
+.alert-info{background:var(--info-pale);color:var(--info);border:1px solid rgba(29,111,164,0.2);}
+.alert-warn{background:var(--warn-pale);color:var(--warn);border:1px solid rgba(217,119,6,0.2);}
+.alert-ok{background:var(--green-pale);color:var(--green);border:1px solid rgba(26,122,56,0.2);}
+
+/* SECTION DIVIDER */
+.sdiv{display:flex;align-items:center;gap:12px;margin:20px 0 14px;}
+.sdiv-line{flex:1;height:1px;background:var(--border);}
+.sdiv-label{font-size:0.68rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:var(--gray-md);white-space:nowrap;}
+
+@media(max-width:900px){.g2,.g3,.g13{grid-template-columns:1fr;}.fg-3,.fg-4{grid-template-columns:1fr 1fr;}}
+@media(max-width:600px){.fg-2,.fg-3,.fg-4{grid-template-columns:1fr;}.stats-row{grid-template-columns:1fr 1fr;}.content{padding:16px 12px;}.topbar{padding:0 12px;}.tb-nav{display:none;}.tb-user{display:none;}}
 </style>
 </head>
 <body>
 
-<!-- ═══════════════ LOGIN ═══════════════ -->
+<!-- ═══════ LOGIN ═══════ -->
 <div id="login-screen">
   <div class="login-left">
-    <div class="login-geo"></div>
-    <div class="login-geo2"></div>
-    <div class="kiut-wordmark">KI<span>U</span>T</div>
-    <div class="kiut-full">Kampala International University Tanzania</div>
-    <div class="kiut-tagline">Student Attendance <span>Management</span> System</div>
-    <div class="kiut-sub">A unified platform for tracking attendance, enforcing exam eligibility, and generating academic reports across all faculties.</div>
+    <div class="l-logo">KI<em>U</em>T</div>
+    <div class="l-uni">Kampala International University — Tanzania</div>
+    <div class="l-divider"></div>
+    <div class="l-headline">Student Attendance <em>Management</em> System</div>
+    <div class="l-desc">A unified institutional platform for tracking attendance, managing academic modules, enforcing exam eligibility rules, and generating comprehensive reports across all departments and programmes.</div>
   </div>
   <div class="login-right">
-    <div style="width:100%">
-      <div class="login-form-title">Sign In</div>
-      <div class="login-form-sub">Use your KIUT credentials to continue</div>
-      <div class="lf-group"><label>Username</label><input type="text" id="l-user" placeholder="Enter username" autocomplete="off"/></div>
-      <div class="lf-group"><label>Password</label><input type="password" id="l-pass" placeholder="Enter password"/></div>
-      <button class="login-submit" onclick="doLogin()">Sign In →</button>
-      <div class="login-error" id="login-err"></div>
-      <div class="login-hint">
-        <div class="login-hint-title">Demo Credentials</div>
-        <div class="login-hint-row"><strong>admin</strong> / admin123 — Admin</div>
-        <div class="login-hint-row"><strong>teacher1</strong> / pass123 — Teacher (CS101, MA101)</div>
-        <div class="login-hint-row"><strong>teacher2</strong> / pass123 — Teacher (CS201, CS202)</div>
-        <div class="login-hint-row"><strong>student1</strong> / pass123 — Student (Alice)</div>
+    <div class="lf-wrap">
+      <div class="lf-title">Sign In</div>
+      <div class="lf-sub">Enter your KIUT institutional credentials</div>
+      <div class="lf-group"><label>Username</label><input type="text" id="l-user" placeholder="username" autocomplete="off"/></div>
+      <div class="lf-group"><label>Password</label><input type="password" id="l-pass" placeholder="password"/></div>
+      <button class="lf-submit" onclick="doLogin()">Sign In →</button>
+      <div class="lf-err" id="login-err"></div>
+      <div class="lf-hint">
+        <div class="lf-hint-title">Demo Accounts</div>
+        <div class="lf-hint-row"><strong>dean</strong> / dean123 — Dean of Students</div>
+        <div class="lf-hint-row"><strong>hod_cs</strong> / hod123 — HOD, Faculty of Computing</div>
+        <div class="lf-hint-row"><strong>hod_bus</strong> / hod123 — HOD, Faculty of Business</div>
+        <div class="lf-hint-row"><strong>teacher1</strong> / pass123 — Lecturer</div>
+        <div class="lf-hint-row"><strong>student1</strong> / pass123 — Student</div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ═══════════════ APP ═══════════════ -->
-<div id="app-shell">
+<!-- ═══════ APP ═══════ -->
+<div id="app-shell" style="display:none;min-height:100vh;">
   <div class="topbar">
-    <div class="topbar-brand">
-      <div class="topbar-logo-mark">K</div>
-      <div class="topbar-brand-text">KIUT <span>Attend</span></div>
+    <div class="tb-brand">
+      <div class="tb-mark">K</div>
+      <div class="tb-name">KIUT <em>Attend</em></div>
     </div>
-    <div class="topbar-nav" id="topbar-nav"></div>
-    <div class="topbar-right">
-      <span class="top-user" id="top-username"></span>
-      <span class="role-chip" id="top-role-chip"></span>
-      <button class="logout-btn" onclick="doLogout()">Sign Out</button>
+    <div class="tb-nav" id="tb-nav"></div>
+    <div class="tb-right">
+      <span class="tb-user" id="tb-user"></span>
+      <span class="role-chip" id="tb-role"></span>
+      <button class="tb-logout" onclick="doLogout()">Sign Out</button>
     </div>
   </div>
   <div class="content" id="main-content"></div>
@@ -718,11 +393,11 @@ tbody tr:hover td { background: var(--green-pale); }
 </div>
 
 <!-- MODAL -->
-<div class="modal-overlay" id="modal-overlay">
-  <div class="modal">
-    <div class="modal-title" id="modal-title"></div>
-    <div id="modal-body"></div>
-    <div class="modal-actions" id="modal-actions"></div>
+<div class="mo" id="modal">
+  <div class="mo-box">
+    <div class="mo-title" id="mo-title"></div>
+    <div id="mo-body"></div>
+    <div class="mo-actions" id="mo-actions"></div>
   </div>
 </div>
 
@@ -730,768 +405,1344 @@ tbody tr:hover td { background: var(--green-pale); }
 <div class="kiut-strip"></div>
 
 <script>
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════
 //  DATA STORE
-// ═══════════════════════════════════════════════
-const STORE_KEY = 'kiut_attend_v1';
+// ═══════════════════════════════════════
+const STORE = 'kiut_v4';
 let DB = {
   users: [
-    { id:'u1', username:'admin',    password:'admin123', role:'admin',   name:'System Administrator',   email:'admin@kiut.ac.tz' },
-    { id:'u2', username:'teacher1', password:'pass123',  role:'teacher', name:'Dr. Sarah Kimani',        email:'skimani@kiut.ac.tz' },
-    { id:'u3', username:'teacher2', password:'pass123',  role:'teacher', name:'Mr. James Oloo',          email:'joloo@kiut.ac.tz' },
-    { id:'u4', username:'student1', password:'pass123',  role:'student', name:'Alice Mwangi',            email:'amwangi@kiut.ac.tz', regNo:'KIUT/2024/001' },
-    { id:'u5', username:'student2', password:'pass123',  role:'student', name:'Bob Kariuki',             email:'bkariuki@kiut.ac.tz', regNo:'KIUT/2024/002' },
-    { id:'u6', username:'student3', password:'pass123',  role:'student', name:'Clara Njoroge',           email:'cnjoroge@kiut.ac.tz', regNo:'KIUT/2024/003' },
+    {id:'u0',username:'dean',   password:'dean123', role:'dean',    name:'Prof. John Mwamba',      email:'dean@kiut.ac.tz'},
+    {id:'u1',username:'hod_cs', password:'hod123',  role:'hod',     name:'Dr. Grace Oduya',        email:'goduya@kiut.ac.tz',   deptId:'d1'},
+    {id:'u2',username:'hod_bus',password:'hod123',  role:'hod',     name:'Dr. Peter Salehe',       email:'psalehe@kiut.ac.tz',  deptId:'d2'},
+    {id:'u3',username:'teacher1',password:'pass123', role:'teacher', name:'Dr. Sarah Kimani',       email:'skimani@kiut.ac.tz',  deptId:'d1'},
+    {id:'u4',username:'teacher2',password:'pass123', role:'teacher', name:'Mr. James Oloo',         email:'joloo@kiut.ac.tz',    deptId:'d1'},
+    {id:'u5',username:'teacher3',password:'pass123', role:'teacher', name:'Ms. Fatuma Rashid',      email:'frashid@kiut.ac.tz',  deptId:'d2'},
+    {id:'u6',username:'student1',password:'pass123', role:'student', name:'Alice Mwangi',           email:'amwangi@kiut.ac.tz',  deptId:'d1', regNo:'KIUT/CS/2024/001', classId:'c1'},
+    {id:'u7',username:'student2',password:'pass123', role:'student', name:'Bob Kariuki',            email:'bkariuki@kiut.ac.tz', deptId:'d1', regNo:'KIUT/CS/2024/002', classId:'c1'},
+    {id:'u8',username:'student3',password:'pass123', role:'student', name:'Clara Njoroge',          email:'cnjoroge@kiut.ac.tz', deptId:'d1', regNo:'KIUT/CS/2024/003', classId:'c2'},
+    {id:'u9',username:'student4',password:'pass123', role:'student', name:'David Kamau',            email:'dkamau@kiut.ac.tz',   deptId:'d2', regNo:'KIUT/BUS/2024/001',classId:'c3'},
+  ],
+  departments: [
+    {id:'d1', name:'Faculty of Computing & Information Technology', code:'FCIT', hodId:'u1'},
+    {id:'d2', name:'Faculty of Business Administration',            code:'FBA',  hodId:'u2'},
+  ],
+  programs: [
+    {id:'p1', name:'Diploma of Computer Science',         code:'DCS',  deptId:'d1', duration:2},
+    {id:'p2', name:'Bachelor of Science in IT',           code:'BSIT', deptId:'d1', duration:3},
+    {id:'p3', name:'Diploma of Business Administration',  code:'DBA',  deptId:'d2', duration:2},
+    {id:'p4', name:'Bachelor of Business Administration', code:'BBA',  deptId:'d2', duration:3},
+  ],
+  classes: [
+    {id:'c1', name:'DCS Year 1',  programId:'p1', year:1, deptId:'d1', semester:'Semester 1 2024/25'},
+    {id:'c2', name:'DCS Year 2',  programId:'p1', year:2, deptId:'d1', semester:'Semester 1 2024/25'},
+    {id:'c3', name:'DBA Year 1',  programId:'p3', year:1, deptId:'d2', semester:'Semester 1 2024/25'},
   ],
   modules: [
-    { id:'m1', code:'CS101', name:'Introduction to Programming',  teacherId:'u2', description:'Fundamentals of programming using Python' },
-    { id:'m2', code:'MA101', name:'Calculus I',                   teacherId:'u2', description:'Differential and integral calculus' },
-    { id:'m3', code:'CS201', name:'Data Structures',              teacherId:'u3', description:'Arrays, linked lists, trees and graphs' },
-    { id:'m4', code:'CS202', name:'Database Systems',             teacherId:'u3', description:'SQL, relational models and NoSQL' },
+    {id:'m1', code:'CS101', name:'Introduction to Programming',  classId:'c1', teacherId:'u3', deptId:'d1', creditHours:3},
+    {id:'m2', code:'CS102', name:'Computer Mathematics',         classId:'c1', teacherId:'u4', deptId:'d1', creditHours:3},
+    {id:'m3', code:'CS201', name:'Data Structures & Algorithms', classId:'c2', teacherId:'u3', deptId:'d1', creditHours:4},
+    {id:'m4', code:'BA101', name:'Principles of Management',     classId:'c3', teacherId:'u5', deptId:'d2', creditHours:3},
+    {id:'m5', code:'BA102', name:'Business Communication',       classId:'c3', teacherId:'u5', deptId:'d2', creditHours:2},
   ],
   enrollments: [
-    { studentId:'u4', moduleId:'m1' }, { studentId:'u4', moduleId:'m2' }, { studentId:'u4', moduleId:'m3' },
-    { studentId:'u5', moduleId:'m1' }, { studentId:'u5', moduleId:'m3' }, { studentId:'u5', moduleId:'m4' },
-    { studentId:'u6', moduleId:'m2' }, { studentId:'u6', moduleId:'m4' },
+    // {id, studentId, moduleId, classId}
+    {id:'e1', studentId:'u6', moduleId:'m1', classId:'c1'},
+    {id:'e2', studentId:'u6', moduleId:'m2', classId:'c1'},
+    {id:'e3', studentId:'u7', moduleId:'m1', classId:'c1'},
+    {id:'e4', studentId:'u7', moduleId:'m2', classId:'c1'},
+    {id:'e5', studentId:'u8', moduleId:'m3', classId:'c2'},
+    {id:'e6', studentId:'u9', moduleId:'m4', classId:'c3'},
+    {id:'e7', studentId:'u9', moduleId:'m5', classId:'c3'},
   ],
-  sessions: []
+  sessions: [],
+  // sessions: {id, moduleId, classId, deptId, date, topic, records:{userId:'P'|'A'}}
 };
-let currentUser = null;
+
+let CU = null; // current user
 let tempAtt = {};
 
-function saveDB() { localStorage.setItem(STORE_KEY, JSON.stringify(DB)); }
-function loadDB() { const r = localStorage.getItem(STORE_KEY); if(r) DB=JSON.parse(r); }
+function saveDB(){localStorage.setItem(STORE,JSON.stringify(DB));}
+function loadDB(){const r=localStorage.getItem(STORE);if(r)DB=JSON.parse(r);}
 
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════
 //  HELPERS
-// ═══════════════════════════════════════════════
-function uid() { return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
-function toast(msg, type='ok') {
-  const el = document.createElement('div');
-  el.className = `toast toast-${type}`;
-  el.textContent = msg;
+// ═══════════════════════════════════════
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+function toast(msg,type='ok'){
+  const el=document.createElement('div');
+  el.className=`toast t-${type}`;el.textContent=msg;
   document.getElementById('toast-box').appendChild(el);
-  setTimeout(()=>el.remove(), 3400);
+  setTimeout(()=>el.remove(),3400);
 }
-function pct(p,t) { return t ? Math.round(p/t*1000)/10 : 0; }
-function pctColor(p) { return p>=75?'var(--green)':p>=60?'var(--yellow-dark)':'var(--danger)'; }
-function pctClass(p) { return p>=75?'pfill-g':p>=60?'pfill-y':'pfill-r'; }
-function eligBadge(p) {
-  return p>=75
-    ? '<span class="badge badge-green">✓ Eligible</span>'
-    : '<span class="badge badge-red">✗ Not Eligible</span>';
-}
-function moduleStats(userId, moduleId) {
-  const sessions = DB.sessions.filter(s=>s.moduleId===moduleId);
-  let present=0, total=0;
-  sessions.forEach(s=>{ if(s.records[userId]!==undefined){total++;if(s.records[userId]==='P')present++;} });
-  return { present, absent:total-present, total };
-}
+function pct(p,t){return t?Math.round(p/t*1000)/10:0;}
+function pctColor(p){return p>=75?'var(--green)':p>=60?'var(--warn)':'var(--danger)';}
+function pctClass(p){return p>=75?'pf-g':p>=60?'pf-y':'pf-r';}
+function eligBadge(p){return p>=75?'<span class="badge b-green">✓ Eligible</span>':'<span class="badge b-red">✗ Not Eligible</span>';}
+function roleBadge(r){const m={dean:'b-yellow',hod:'b-info',teacher:'b-green',student:'b-gray'};return `<span class="badge ${m[r]||'b-gray'}">${r}</span>`;}
 
-// ═══════════════════════════════════════════════
+function modStats(userId,moduleId){
+  const ss=DB.sessions.filter(s=>s.moduleId===moduleId);
+  let p=0,t=0;
+  ss.forEach(s=>{if(s.records[userId]!==undefined){t++;if(s.records[userId]==='P')p++;}});
+  return{present:p,absent:t-p,total:t};
+}
+function getDept(id){return DB.departments.find(d=>d.id===id);}
+function getProgram(id){return DB.programs.find(p=>p.id===id);}
+function getClass(id){return DB.classes.find(c=>c.id===id);}
+function getUser(id){return DB.users.find(u=>u.id===id);}
+function getModule(id){return DB.modules.find(m=>m.id===id);}
+
+// dept-scoped helpers
+function myDeptStudents(){return DB.users.filter(u=>u.role==='student'&&u.deptId===CU.deptId);}
+function myDeptTeachers(){return DB.users.filter(u=>u.role==='teacher'&&u.deptId===CU.deptId);}
+function myDeptModules(){return DB.modules.filter(m=>m.deptId===CU.deptId);}
+function myDeptClasses(){return DB.classes.filter(c=>c.deptId===CU.deptId);}
+function myDeptPrograms(){return DB.programs.filter(p=>p.deptId===CU.deptId);}
+
+// ═══════════════════════════════════════
 //  AUTH
-// ═══════════════════════════════════════════════
-function doLogin() {
-  const u = document.getElementById('l-user').value.trim();
-  const p = document.getElementById('l-pass').value;
-  const user = DB.users.find(x=>x.username===u&&x.password===p);
-  if (!user) { document.getElementById('login-err').textContent='Invalid username or password.'; return; }
-  currentUser = user;
+// ═══════════════════════════════════════
+function doLogin(){
+  const u=document.getElementById('l-user').value.trim();
+  const p=document.getElementById('l-pass').value;
+  const user=DB.users.find(x=>x.username===u&&x.password===p);
+  if(!user){document.getElementById('login-err').textContent='Invalid username or password.';return;}
+  CU=user;
   document.getElementById('login-err').textContent='';
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app-shell').style.display='block';
   bootApp();
 }
-document.getElementById('l-pass').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); });
-function doLogout() {
-  currentUser=null;
+document.getElementById('l-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+function doLogout(){
+  CU=null;tempAtt={};
   document.getElementById('app-shell').style.display='none';
   document.getElementById('login-screen').style.display='flex';
   document.getElementById('l-user').value='';
   document.getElementById('l-pass').value='';
 }
 
-// ═══════════════════════════════════════════════
-//  BOOT
-// ═══════════════════════════════════════════════
-function bootApp() {
-  document.getElementById('top-username').textContent=currentUser.name;
-  const rc=document.getElementById('top-role-chip');
-  rc.textContent=currentUser.role; rc.className=`role-chip role-${currentUser.role}`;
-  const nav=document.getElementById('topbar-nav');
+function bootApp(){
+  document.getElementById('tb-user').textContent=CU.name;
+  const rc=document.getElementById('tb-role');
+  const rcMap={dean:'rc-dean',hod:'rc-hod',teacher:'rc-teacher',student:'rc-student'};
+  const rcLabel={dean:'Dean of Students',hod:'Head of Dept',teacher:'Lecturer',student:'Student'};
+  rc.textContent=rcLabel[CU.role]||CU.role;rc.className=`role-chip ${rcMap[CU.role]||''}`;
+  const nav=document.getElementById('tb-nav');
   let pages=[];
-  if(currentUser.role==='admin')   pages=[['dashboard','Dashboard'],['users','Users'],['modules','Modules'],['reports','Reports']];
-  if(currentUser.role==='teacher') pages=[['dashboard','Dashboard'],['my-modules','My Modules'],['reports','Reports']];
-  if(currentUser.role==='student') pages=[['portal','My Attendance']];
-  nav.innerHTML=pages.map(([id,lbl])=>`<button class="topbar-btn" onclick="navTo('${id}')" id="nav-${id}">${lbl}</button>`).join('');
+  if(CU.role==='dean')    pages=[['dashboard','Dashboard'],['departments','Departments'],['programs','Programmes'],['users','Users'],['reports','Reports']];
+  if(CU.role==='hod')     pages=[['dashboard','Dashboard'],['classes','Classes'],['modules','Modules'],['students','Students'],['teachers','Teachers'],['reports','Reports']];
+  if(CU.role==='teacher') pages=[['dashboard','Dashboard'],['my-modules','My Modules'],['reports','Reports']];
+  if(CU.role==='student') pages=[['portal','My Attendance']];
+  nav.innerHTML=pages.map(([id,lbl])=>`<button class="tb-btn" onclick="navTo('${id}')" id="nav-${id}">${lbl}</button>`).join('');
   navTo(pages[0][0]);
 }
-function navTo(page) {
-  document.querySelectorAll('.topbar-btn').forEach(b=>b.classList.remove('active'));
+function navTo(page){
+  document.querySelectorAll('.tb-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('nav-'+page)?.classList.add('active');
   const el=document.getElementById('main-content');
-  if(currentUser.role==='admin')   renderAdmin(page,el);
-  if(currentUser.role==='teacher') renderTeacher(page,el);
-  if(currentUser.role==='student') renderStudent(page,el);
+  if(CU.role==='dean')    renderDean(page,el);
+  if(CU.role==='hod')     renderHOD(page,el);
+  if(CU.role==='teacher') renderTeacher(page,el);
+  if(CU.role==='student') renderStudent(page,el);
 }
 
-// ═══════════════════════════════════════════════
-//  ADMIN
-// ═══════════════════════════════════════════════
-function renderAdmin(page,el) {
-  if(page==='dashboard') el.innerHTML=adminDashboard();
-  if(page==='users')     el.innerHTML=adminUsers();
-  if(page==='modules')   el.innerHTML=adminModules();
-  if(page==='reports')   el.innerHTML=adminReports();
-  if(page==='users') { toggleRegNo(); document.getElementById('nu-role')?.addEventListener('change',toggleRegNo); }
+// ═══════════════════════════════════════
+//  DEAN VIEWS
+// ═══════════════════════════════════════
+function renderDean(page,el){
+  if(page==='dashboard')   el.innerHTML=deanDashboard();
+  if(page==='departments') el.innerHTML=deanDepartments();
+  if(page==='programs')    el.innerHTML=deanPrograms();
+  if(page==='users')       el.innerHTML=deanUsers();
+  if(page==='reports')     el.innerHTML=deanReports();
+  postRender(page);
+}
+function postRender(page){
+  if(page==='users'){
+    document.getElementById('nu-role')?.addEventListener('change',onRoleChange);
+    onRoleChange();
+  }
 }
 
-function adminDashboard() {
+function deanDashboard(){
+  const depts=DB.departments.length, progs=DB.programs.length;
   const teachers=DB.users.filter(u=>u.role==='teacher').length;
   const students=DB.users.filter(u=>u.role==='student').length;
-  const mods=DB.modules.length, sessions=DB.sessions.length;
+  const modules=DB.modules.length, sessions=DB.sessions.length;
   let elig=0,notElig=0;
   DB.users.filter(u=>u.role==='student').forEach(s=>{
     DB.modules.forEach(m=>{
-      if(!DB.enrollments.find(e=>e.studentId===s.id&&e.moduleId===m.id)) return;
-      const st=moduleStats(s.id,m.id);
+      if(!DB.enrollments.find(e=>e.studentId===s.id&&e.moduleId===m.id))return;
+      const st=modStats(s.id,m.id);
       if(st.total>0){pct(st.present,st.total)>=75?elig++:notElig++;}
     });
   });
   return `
-  <div class="page-header">
-    <div class="page-header-left">
-      <div class="page-title">Admin <span>Dashboard</span></div>
-      <div class="page-sub">KIUT — Kampala International University Tanzania</div>
-    </div>
-    <div class="page-badge">Academic Year 2024/25</div>
-  </div>
+  <div class="ph"><div class="ph-left"><div class="ph-title">Dean <em>of Students</em> Dashboard</div>
+    <div class="ph-sub">Kampala International University Tanzania — System Overview</div></div>
+    <div class="ph-badge">Academic Year 2024/25</div></div>
   <div class="stats-row">
-    <div class="stat-box sb-green"><div class="stat-icon">👨‍🏫</div><div class="stat-value">${teachers}</div><div class="stat-label">Teachers</div></div>
-    <div class="stat-box sb-green"><div class="stat-icon">🎓</div><div class="stat-value">${students}</div><div class="stat-label">Students</div></div>
-    <div class="stat-box sb-yellow"><div class="stat-icon">📚</div><div class="stat-value">${mods}</div><div class="stat-label">Modules</div></div>
-    <div class="stat-box sb-black"><div class="stat-icon">📆</div><div class="stat-value">${sessions}</div><div class="stat-label">Sessions</div></div>
-    <div class="stat-box sb-green"><div class="stat-icon">✅</div><div class="stat-value">${elig}</div><div class="stat-label">Eligible</div></div>
-    <div class="stat-box sb-warn"><div class="stat-icon">⚠️</div><div class="stat-value">${notElig}</div><div class="stat-label">Not Eligible</div></div>
+    <div class="sbox sb-k"><div class="sbox-icon">🏛️</div><div class="sbox-val">${depts}</div><div class="sbox-lbl">Departments</div></div>
+    <div class="sbox sb-y"><div class="sbox-icon">🎓</div><div class="sbox-val">${progs}</div><div class="sbox-lbl">Programmes</div></div>
+    <div class="sbox sb-g"><div class="sbox-icon">👨‍🏫</div><div class="sbox-val">${teachers}</div><div class="sbox-lbl">Lecturers</div></div>
+    <div class="sbox sb-b"><div class="sbox-icon">👥</div><div class="sbox-val">${students}</div><div class="sbox-lbl">Students</div></div>
+    <div class="sbox sb-g"><div class="sbox-icon">📚</div><div class="sbox-val">${modules}</div><div class="sbox-lbl">Modules</div></div>
+    <div class="sbox sb-k"><div class="sbox-icon">📆</div><div class="sbox-val">${sessions}</div><div class="sbox-lbl">Sessions</div></div>
+    <div class="sbox sb-g"><div class="sbox-icon">✅</div><div class="sbox-val">${elig}</div><div class="sbox-lbl">Eligible</div></div>
+    <div class="sbox sb-d"><div class="sbox-icon">⚠️</div><div class="sbox-val">${notElig}</div><div class="sbox-lbl">Not Eligible</div></div>
   </div>
-  <div class="two-col">
+  <div class="g2">
     <div class="card">
-      <div class="card-header"><div class="card-title"><div class="card-icon ci-green">👨‍🏫</div>Teachers Overview</div></div>
-      <div class="table-wrap"><table>
-        <thead><tr><th>Teacher</th><th>Modules</th><th>Sessions</th></tr></thead>
-        <tbody>
-        ${DB.users.filter(u=>u.role==='teacher').map(t=>{
-          const ms=DB.modules.filter(m=>m.teacherId===t.id);
-          const se=DB.sessions.filter(s=>ms.find(m=>m.id===s.moduleId)).length;
-          return `<tr><td><strong>${t.name}</strong><br><span style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--gray-mid)">${t.username}</span></td>
-          <td>${ms.map(m=>`<span class="badge badge-module">${m.code}</span>`).join(' ')}</td>
-          <td><strong>${se}</strong></td></tr>`;
-        }).join('')||'<tr class="empty-row"><td colspan="3">No teachers.</td></tr>'}
-        </tbody>
+      <div class="ch"><div class="ct"><div class="ci ci-k">🏛️</div>Departments Summary</div></div>
+      <div class="tw"><table>
+        <thead><tr><th>Dept</th><th>HOD</th><th>Progs</th><th>Students</th><th>Sessions</th></tr></thead>
+        <tbody>${DB.departments.map(d=>{
+          const hod=getUser(d.hodId);
+          const progs=DB.programs.filter(p=>p.deptId===d.id).length;
+          const studs=DB.users.filter(u=>u.role==='student'&&u.deptId===d.id).length;
+          const sess=DB.sessions.filter(s=>s.deptId===d.id).length;
+          return `<tr><td><strong>${d.code}</strong><br><span style="font-size:0.73rem;color:var(--gray-md)">${d.name}</span></td>
+            <td>${hod?.name||'—'}</td><td>${progs}</td><td>${studs}</td><td>${sess}</td></tr>`;
+        }).join('')||'<tr class="er"><td colspan="5">No departments.</td></tr>'}</tbody>
       </table></div>
     </div>
     <div class="card">
-      <div class="card-header"><div class="card-title"><div class="card-icon ci-yellow">📚</div>Modules Overview</div></div>
-      <div class="table-wrap"><table>
-        <thead><tr><th>Code</th><th>Module</th><th>Students</th></tr></thead>
-        <tbody>
-        ${DB.modules.map(m=>{
-          const t=DB.users.find(u=>u.id===m.teacherId);
-          const en=DB.enrollments.filter(e=>e.moduleId===m.id).length;
-          return `<tr><td><span class="badge badge-module">${m.code}</span></td>
-          <td><strong>${m.name}</strong><br><span style="font-size:0.75rem;color:var(--gray-mid)">${t?.name||'—'}</span></td>
-          <td>${en}</td></tr>`;
-        }).join('')||'<tr class="empty-row"><td colspan="3">No modules.</td></tr>'}
-        </tbody>
+      <div class="ch"><div class="ct"><div class="ci ci-y">🎓</div>Programmes Overview</div></div>
+      <div class="tw"><table>
+        <thead><tr><th>Code</th><th>Programme</th><th>Dept</th><th>Classes</th></tr></thead>
+        <tbody>${DB.programs.map(p=>{
+          const d=getDept(p.deptId);
+          const cls=DB.classes.filter(c=>c.programId===p.id).length;
+          return `<tr><td><span class="badge b-dark">${p.code}</span></td>
+            <td><strong>${p.name}</strong></td>
+            <td><span class="badge b-info">${d?.code||'—'}</span></td>
+            <td>${cls}</td></tr>`;
+        }).join('')||'<tr class="er"><td colspan="4">No programmes.</td></tr>'}</tbody>
       </table></div>
     </div>
   </div>`;
 }
 
-function adminUsers() {
-  const students=DB.users.filter(u=>u.role==='student');
-  const teachers=DB.users.filter(u=>u.role==='teacher');
+function deanDepartments(){
   return `
-  <div class="page-header"><div class="page-header-left"><div class="page-title">User <span>Management</span></div><div class="page-sub">Manage teachers and students</div></div></div>
-  <div class="tab-row">
-    <button class="tab-btn active" onclick="switchTab('utab','utab-teachers',this)">👨‍🏫 Teachers</button>
-    <button class="tab-btn" onclick="switchTab('utab','utab-students',this)">🎓 Students</button>
-    <button class="tab-btn" onclick="switchTab('utab','utab-add',this)">➕ Add User</button>
-  </div>
-  <div id="utab-teachers" class="tab-pane active">
+  <div class="ph"><div class="ph-left"><div class="ph-title">Department <em>Management</em></div>
+    <div class="ph-sub">Create and manage university departments</div></div></div>
+  <div class="g2">
     <div class="card">
-      <div class="card-header"><div class="card-title"><div class="card-icon ci-green">👨‍🏫</div>Teaching Staff</div></div>
-      <div class="table-wrap"><table>
-        <thead><tr><th>Name</th><th>Username</th><th>Email</th><th>Assigned Modules</th><th>Action</th></tr></thead>
-        <tbody>
-        ${teachers.map(t=>{
-          const ms=DB.modules.filter(m=>m.teacherId===t.id);
-          return `<tr><td><strong>${t.name}</strong></td>
-          <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.8rem">${t.username}</span></td>
-          <td>${t.email||'—'}</td>
-          <td>${ms.map(m=>`<span class="badge badge-module">${m.code}</span>`).join(' ')||'<span class="badge badge-gray">None</span>'}</td>
-          <td><button class="btn btn-danger btn-sm" onclick="deleteUser('${t.id}')">🗑 Remove</button></td></tr>`;
-        }).join('')||'<tr class="empty-row"><td colspan="5">No teachers registered.</td></tr>'}
-        </tbody>
-      </table></div>
-    </div>
-  </div>
-  <div id="utab-students" class="tab-pane">
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title"><div class="card-icon ci-green">🎓</div>Enrolled Students</div>
-        <button class="btn btn-yellow btn-sm" onclick="showEnrollModal()">⚙ Manage Enrollments</button>
-      </div>
-      <div class="table-wrap"><table>
-        <thead><tr><th>Reg No</th><th>Name</th><th>Username</th><th>Email</th><th>Modules</th><th>Action</th></tr></thead>
-        <tbody>
-        ${students.map(s=>{
-          const en=DB.enrollments.filter(e=>e.studentId===s.id).map(e=>DB.modules.find(m=>m.id===e.moduleId)).filter(Boolean);
-          return `<tr><td><span class="badge badge-student">${s.regNo||'—'}</span></td>
-          <td><strong>${s.name}</strong></td>
-          <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.8rem">${s.username}</span></td>
-          <td>${s.email||'—'}</td>
-          <td>${en.map(m=>`<span class="badge badge-module">${m.code}</span>`).join(' ')||'<span class="badge badge-gray">None</span>'}</td>
-          <td><button class="btn btn-danger btn-sm" onclick="deleteUser('${s.id}')">🗑 Remove</button></td></tr>`;
-        }).join('')||'<tr class="empty-row"><td colspan="6">No students registered.</td></tr>'}
-        </tbody>
-      </table></div>
-    </div>
-  </div>
-  <div id="utab-add" class="tab-pane">
-    <div class="card">
-      <div class="card-header"><div class="card-title"><div class="card-icon ci-yellow">➕</div>Register New User</div></div>
-      <div class="form-grid cols3">
-        <div class="form-group"><label>Full Name</label><input id="nu-name" placeholder="e.g. John Doe"/></div>
-        <div class="form-group"><label>Username</label><input id="nu-user" placeholder="unique login"/></div>
-        <div class="form-group"><label>Password</label><input id="nu-pass" type="password" placeholder="password"/></div>
-        <div class="form-group"><label>Email</label><input id="nu-email" placeholder="user@kiut.ac.tz"/></div>
-        <div class="form-group"><label>Role</label>
-          <select id="nu-role" onchange="toggleRegNo()"><option value="teacher">Teacher</option><option value="student">Student</option></select>
-        </div>
-        <div class="form-group" id="reg-no-group"><label>Registration No</label><input id="nu-reg" placeholder="KIUT/2024/XXX"/></div>
-      </div>
-      <div class="form-actions"><button class="btn btn-primary" onclick="addUser()">➕ Register User</button></div>
-    </div>
-  </div>`;
-}
-
-function adminModules() {
-  return `
-  <div class="page-header"><div class="page-header-left"><div class="page-title">Module <span>Management</span></div><div class="page-sub">Create modules and manage enrollments</div></div></div>
-  <div class="two-col">
-    <div class="card">
-      <div class="card-header"><div class="card-title"><div class="card-icon ci-yellow">📚</div>Create New Module</div></div>
-      <div class="form-grid">
-        <div class="form-group"><label>Module Code</label><input id="mc-code" placeholder="e.g. CS301"/></div>
-        <div class="form-group"><label>Module Name</label><input id="mc-name" placeholder="e.g. Operating Systems"/></div>
-        <div class="form-group"><label>Assign Teacher</label>
-          <select id="mc-teacher"><option value="">-- Select Teacher --</option>
-          ${DB.users.filter(u=>u.role==='teacher').map(t=>`<option value="${t.id}">${t.name}</option>`).join('')}
+      <div class="ch"><div class="ct"><div class="ci ci-y">➕</div>Add Department</div></div>
+      <div class="fg fg-2">
+        <div class="fgroup"><label>Department Code</label><input id="d-code" placeholder="e.g. FCIT"/></div>
+        <div class="fgroup"><label>Department Name</label><input id="d-name" placeholder="Faculty of Computing…"/></div>
+        <div class="fgroup span2"><label>Assign HOD</label>
+          <select id="d-hod"><option value="">-- Select HOD --</option>
+          ${DB.users.filter(u=>u.role==='hod').map(u=>`<option value="${u.id}">${u.name}</option>`).join('')}
           </select>
         </div>
-        <div class="form-group"><label>Description</label><input id="mc-desc" placeholder="Brief description"/></div>
       </div>
-      <div class="form-actions"><button class="btn btn-primary" onclick="addModule()">➕ Create Module</button></div>
+      <div class="fa"><button class="btn btn-primary" onclick="addDept()">➕ Add Department</button></div>
     </div>
     <div class="card">
-      <div class="card-header"><div class="card-title"><div class="card-icon ci-green">📋</div>Module Registry</div></div>
-      <div class="table-wrap"><table>
-        <thead><tr><th>Code</th><th>Module</th><th>Teacher</th><th>Students</th><th></th></tr></thead>
-        <tbody>
-        ${DB.modules.map(m=>{
-          const t=DB.users.find(u=>u.id===m.teacherId);
-          const en=DB.enrollments.filter(e=>e.moduleId===m.id).length;
-          const se=DB.sessions.filter(s=>s.moduleId===m.id).length;
-          return `<tr><td><span class="badge badge-module">${m.code}</span></td>
-          <td><strong>${m.name}</strong></td>
-          <td>${t?.name||'<span style="color:var(--gray-mid)">Unassigned</span>'}</td>
-          <td>${en} <span style="color:var(--gray-mid);font-size:0.75rem">(${se} sessions)</span></td>
-          <td><button class="btn btn-danger btn-sm" onclick="deleteModule('${m.id}')">🗑</button></td></tr>`;
-        }).join('')||'<tr class="empty-row"><td colspan="5">No modules.</td></tr>'}
-        </tbody>
+      <div class="ch"><div class="ct"><div class="ci ci-g">🏛️</div>All Departments</div></div>
+      <div class="tw"><table>
+        <thead><tr><th>Code</th><th>Name</th><th>HOD</th><th>Staff</th><th>Students</th><th></th></tr></thead>
+        <tbody>${DB.departments.map(d=>{
+          const hod=getUser(d.hodId);
+          const staff=DB.users.filter(u=>u.role==='teacher'&&u.deptId===d.id).length;
+          const studs=DB.users.filter(u=>u.role==='student'&&u.deptId===d.id).length;
+          return `<tr>
+            <td><span class="badge b-dark">${d.code}</span></td>
+            <td><strong>${d.name}</strong></td>
+            <td>${hod?.name||'<span class="badge b-warn">Unassigned</span>'}</td>
+            <td>${staff}</td><td>${studs}</td>
+            <td><button class="btn btn-danger btn-xs" onclick="deleteDept('${d.id}')">🗑</button></td></tr>`;
+        }).join('')||'<tr class="er"><td colspan="6">No departments yet.</td></tr>'}</tbody>
+      </table></div>
+    </div>
+  </div>`;
+}
+
+function deanPrograms(){
+  return `
+  <div class="ph"><div class="ph-left"><div class="ph-title">Programme <em>Management</em></div>
+    <div class="ph-sub">Manage academic programmes across all departments</div></div></div>
+  <div class="g2">
+    <div class="card">
+      <div class="ch"><div class="ct"><div class="ci ci-y">➕</div>Create Programme</div></div>
+      <div class="fg fg-2">
+        <div class="fgroup"><label>Programme Code</label><input id="pg-code" placeholder="e.g. DCS"/></div>
+        <div class="fgroup"><label>Programme Name</label><input id="pg-name" placeholder="Diploma of Computer Science"/></div>
+        <div class="fgroup"><label>Department</label>
+          <select id="pg-dept"><option value="">-- Department --</option>
+          ${DB.departments.map(d=>`<option value="${d.id}">${d.code} — ${d.name}</option>`).join('')}</select>
+        </div>
+        <div class="fgroup"><label>Duration (Years)</label>
+          <select id="pg-dur"><option value="1">1 Year</option><option value="2">2 Years</option><option value="3">3 Years</option><option value="4">4 Years</option></select>
+        </div>
+      </div>
+      <div class="fa"><button class="btn btn-primary" onclick="addProgram()">➕ Create Programme</button></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct"><div class="ci ci-g">🎓</div>All Programmes</div></div>
+      <div class="tw"><table>
+        <thead><tr><th>Code</th><th>Programme</th><th>Dept</th><th>Duration</th><th>Classes</th><th></th></tr></thead>
+        <tbody>${DB.programs.map(p=>{
+          const d=getDept(p.deptId);
+          const cls=DB.classes.filter(c=>c.programId===p.id).length;
+          return `<tr>
+            <td><span class="badge b-dark">${p.code}</span></td>
+            <td><strong>${p.name}</strong></td>
+            <td><span class="badge b-info">${d?.code||'—'}</span></td>
+            <td>${p.duration} yr${p.duration>1?'s':''}</td><td>${cls}</td>
+            <td><button class="btn btn-danger btn-xs" onclick="deleteProgram('${p.id}')">🗑</button></td></tr>`;
+        }).join('')||'<tr class="er"><td colspan="6">No programmes.</td></tr>'}</tbody>
+      </table></div>
+    </div>
+  </div>`;
+}
+
+function deanUsers(){
+  return `
+  <div class="ph"><div class="ph-left"><div class="ph-title">User <em>Management</em></div>
+    <div class="ph-sub">Manage all system accounts — HODs, Lecturers, Students</div></div></div>
+  <div class="tab-row">
+    <button class="tab-btn active" onclick="switchTab('uu','uu-hods',this)">HODs</button>
+    <button class="tab-btn" onclick="switchTab('uu','uu-teachers',this)">Lecturers</button>
+    <button class="tab-btn" onclick="switchTab('uu','uu-students',this)">Students</button>
+    <button class="tab-btn" onclick="switchTab('uu','uu-add',this)">➕ Add User</button>
+  </div>
+  <div id="uu-hods" class="tab-pane active">
+    <div class="card">
+      <div class="ch"><div class="ct"><div class="ci ci-b">👔</div>Heads of Department</div></div>
+      <div class="tw"><table>
+        <thead><tr><th>Name</th><th>Username</th><th>Email</th><th>Department</th><th></th></tr></thead>
+        <tbody>${DB.users.filter(u=>u.role==='hod').map(u=>{
+          const d=getDept(u.deptId);
+          return `<tr><td><strong>${u.name}</strong></td>
+            <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">${u.username}</span></td>
+            <td>${u.email||'—'}</td>
+            <td>${d?`<span class="badge b-info">${d.code}</span>`:'-'}</td>
+            <td><button class="btn btn-danger btn-xs" onclick="delUser('${u.id}')">🗑</button></td></tr>`;
+        }).join('')||'<tr class="er"><td colspan="5">No HODs registered.</td></tr>'}</tbody>
       </table></div>
     </div>
   </div>
-  <div class="card">
-    <div class="card-header">
-      <div class="card-title"><div class="card-icon ci-dark">🔗</div>Enrollment Matrix</div>
-      <button class="btn btn-yellow btn-sm" onclick="showEnrollModal()">⚙ Enroll / Unenroll</button>
+  <div id="uu-teachers" class="tab-pane">
+    <div class="card">
+      <div class="ch"><div class="ct"><div class="ci ci-g">👨‍🏫</div>Lecturers</div></div>
+      <div class="tw"><table>
+        <thead><tr><th>Name</th><th>Username</th><th>Dept</th><th>Modules</th><th></th></tr></thead>
+        <tbody>${DB.users.filter(u=>u.role==='teacher').map(u=>{
+          const d=getDept(u.deptId);
+          const mods=DB.modules.filter(m=>m.teacherId===u.id);
+          return `<tr><td><strong>${u.name}</strong></td>
+            <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">${u.username}</span></td>
+            <td>${d?`<span class="badge b-info">${d.code}</span>`:'-'}</td>
+            <td>${mods.map(m=>`<span class="badge b-dark">${m.code}</span>`).join(' ')||'<span class="badge b-gray">None</span>'}</td>
+            <td><button class="btn btn-danger btn-xs" onclick="delUser('${u.id}')">🗑</button></td></tr>`;
+        }).join('')||'<tr class="er"><td colspan="5">No lecturers.</td></tr>'}</tbody>
+      </table></div>
     </div>
-    <div class="table-wrap"><table>
-      <thead><tr><th>Student</th><th>Reg No</th><th>Enrolled Modules</th></tr></thead>
-      <tbody>
-      ${DB.users.filter(u=>u.role==='student').map(s=>{
-        const ms=DB.enrollments.filter(e=>e.studentId===s.id).map(e=>DB.modules.find(m=>m.id===e.moduleId)).filter(Boolean);
-        return `<tr><td><strong>${s.name}</strong></td>
-        <td><span class="badge badge-student">${s.regNo||'—'}</span></td>
-        <td>${ms.map(m=>`<span class="badge badge-module">${m.code}: ${m.name}</span>`).join(' ')||'<span style="color:var(--gray-mid);font-style:italic">Not enrolled in any module</span>'}</td></tr>`;
-      }).join('')}
-      </tbody>
+  </div>
+  <div id="uu-students" class="tab-pane">
+    <div class="card">
+      <div class="ch"><div class="ct"><div class="ci ci-g">🎓</div>All Students</div></div>
+      <div class="tw"><table>
+        <thead><tr><th>Reg No</th><th>Name</th><th>Dept</th><th>Class</th><th>Modules</th><th></th></tr></thead>
+        <tbody>${DB.users.filter(u=>u.role==='student').map(u=>{
+          const d=getDept(u.deptId),cl=getClass(u.classId);
+          const mods=DB.enrollments.filter(e=>e.studentId===u.id).length;
+          return `<tr>
+            <td><span class="badge b-green">${u.regNo||'—'}</span></td>
+            <td><strong>${u.name}</strong></td>
+            <td>${d?`<span class="badge b-info">${d.code}</span>`:'-'}</td>
+            <td>${cl?`<span class="badge b-gray">${cl.name}</span>`:'-'}</td>
+            <td>${mods} module${mods!==1?'s':''}</td>
+            <td><button class="btn btn-danger btn-xs" onclick="delUser('${u.id}')">🗑</button></td></tr>`;
+        }).join('')||'<tr class="er"><td colspan="6">No students.</td></tr>'}</tbody>
+      </table></div>
+    </div>
+  </div>
+  <div id="uu-add" class="tab-pane">
+    <div class="card">
+      <div class="ch"><div class="ct"><div class="ci ci-y">➕</div>Register New User</div></div>
+      <div class="fg fg-3">
+        <div class="fgroup"><label>Full Name</label><input id="nu-name" placeholder="Full name"/></div>
+        <div class="fgroup"><label>Username</label><input id="nu-user" placeholder="login username"/></div>
+        <div class="fgroup"><label>Password</label><input id="nu-pass" type="password" placeholder="password"/></div>
+        <div class="fgroup"><label>Email</label><input id="nu-email" placeholder="user@kiut.ac.tz"/></div>
+        <div class="fgroup"><label>Role</label>
+          <select id="nu-role">
+            <option value="hod">Head of Department (HOD)</option>
+            <option value="teacher">Lecturer / Teacher</option>
+            <option value="student">Student</option>
+          </select>
+        </div>
+        <div class="fgroup" id="nu-dept-g"><label>Department</label>
+          <select id="nu-dept"><option value="">-- Select Dept --</option>
+          ${DB.departments.map(d=>`<option value="${d.id}">${d.code} — ${d.name}</option>`).join('')}</select>
+        </div>
+        <div class="fgroup" id="nu-reg-g"><label>Registration No</label><input id="nu-reg" placeholder="KIUT/CS/2024/XXX"/></div>
+        <div class="fgroup" id="nu-class-g"><label>Class</label>
+          <select id="nu-class"><option value="">-- Select Class --</option>
+          ${DB.classes.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}</select>
+        </div>
+      </div>
+      <div class="fa"><button class="btn btn-primary" onclick="addUser()">➕ Register User</button></div>
+    </div>
+  </div>`;
+}
+
+function deanReports(){
+  return `
+  <div class="ph"><div class="ph-left"><div class="ph-title">System <em>Reports</em></div>
+    <div class="ph-sub">Full attendance overview — all departments</div></div></div>
+  ${DB.departments.map(dept=>{
+    const deptMods=DB.modules.filter(m=>m.deptId===dept.id);
+    return `
+    <div class="sdiv"><div class="sdiv-line"></div>
+      <div class="sdiv-label">🏛️ ${dept.name} (${dept.code})</div>
+      <div class="sdiv-line"></div></div>
+    ${deptMods.map(m=>moduleReportCard(m,true)).join('')||'<div class="card"><p style="color:var(--gray-md);text-align:center;padding:20px;">No modules in this department.</p></div>'}`;
+  }).join('')}`;
+}
+
+function moduleReportCard(m,showExport=false){
+  const enrolled=DB.enrollments.filter(e=>e.moduleId===m.id);
+  const teacher=getUser(m.teacherId);
+  const cls=getClass(m.classId);
+  const sessions=DB.sessions.filter(s=>s.moduleId===m.id);
+  return `<div class="card">
+    <div class="ch">
+      <div>
+        <div class="ct"><div class="ci ci-y">📚</div>${m.name} <span class="badge b-dark">${m.code}</span></div>
+        <div style="font-size:0.75rem;color:var(--gray-md);margin-top:4px;">
+          Lecturer: ${teacher?.name||'—'} &nbsp;|&nbsp;
+          Class: ${cls?.name||'—'} &nbsp;|&nbsp;
+          ${sessions.length} sessions &nbsp;|&nbsp; ${enrolled.length} enrolled
+        </div>
+      </div>
+      ${showExport?`<button class="btn btn-ghost btn-sm" onclick="exportCSV('${m.id}')">⬇ Export CSV</button>`:''}
+    </div>
+    <div class="tw"><table>
+      <thead><tr><th>Reg No</th><th>Student</th><th>Total</th><th>Present</th><th>Absent</th><th>%</th><th>Status</th></tr></thead>
+      <tbody>${enrolled.length?enrolled.map(en=>{
+        const s=getUser(en.studentId);if(!s)return'';
+        const st=modStats(s.id,m.id),p=pct(st.present,st.total);
+        return `<tr>
+          <td><span class="badge b-green">${s.regNo||'—'}</span></td>
+          <td><strong>${s.name}</strong></td>
+          <td>${st.total}</td>
+          <td style="color:var(--green);font-weight:700">${st.present}</td>
+          <td style="color:var(--danger);font-weight:700">${st.absent}</td>
+          <td><span class="pct-v" style="color:${pctColor(p)}">${p}%</span>
+            <div class="pbar"><div class="pf ${pctClass(p)}" style="width:${Math.min(p,100)}%"></div></div></td>
+          <td>${eligBadge(p)}</td></tr>`;
+      }).join(''):'<tr class="er"><td colspan="7">No students enrolled.</td></tr>'}</tbody>
     </table></div>
   </div>`;
 }
-
-function adminReports() {
-  return `
-  <div class="page-header"><div class="page-header-left"><div class="page-title">Attendance <span>Reports</span></div><div class="page-sub">Full semester attendance report — all modules</div></div></div>
-  ${DB.modules.map(m=>{
-    const teacher=DB.users.find(u=>u.id===m.teacherId);
-    const enrolled=DB.enrollments.filter(e=>e.moduleId===m.id);
-    const sessions=DB.sessions.filter(s=>s.moduleId===m.id);
-    return `<div class="card">
-      <div class="card-header">
-        <div>
-          <div class="card-title"><div class="card-icon ci-yellow">📚</div>${m.name} &nbsp;<span class="badge badge-module">${m.code}</span></div>
-          <div style="color:var(--gray-mid);font-size:0.78rem;margin-top:4px;">Lecturer: ${teacher?.name||'—'} &nbsp;|&nbsp; ${sessions.length} sessions held &nbsp;|&nbsp; ${enrolled.length} enrolled</div>
-        </div>
-        <button class="btn btn-ghost btn-sm" onclick="exportCSV('${m.id}')">⬇ Export CSV</button>
-      </div>
-      <div class="table-wrap"><table>
-        <thead><tr><th>Reg No</th><th>Student</th><th>Total</th><th>Present</th><th>Absent</th><th>Percentage</th><th>Exam Status</th></tr></thead>
-        <tbody>
-        ${enrolled.length?enrolled.map(en=>{
-          const s=DB.users.find(u=>u.id===en.studentId); if(!s)return'';
-          const st=moduleStats(s.id,m.id); const p=pct(st.present,st.total);
-          return `<tr>
-            <td><span class="badge badge-student">${s.regNo||'—'}</span></td>
-            <td><strong>${s.name}</strong></td><td>${st.total}</td>
-            <td style="color:var(--green);font-weight:600">${st.present}</td>
-            <td style="color:var(--danger);font-weight:600">${st.absent}</td>
-            <td><span class="pct-val" style="color:${pctColor(p)}">${p}%</span>
-              <div class="pbar"><div class="pfill ${pctClass(p)}" style="width:${Math.min(p,100)}%"></div></div></td>
-            <td>${eligBadge(p)}</td>
-          </tr>`;
-        }).join(''):'<tr class="empty-row"><td colspan="7">No students enrolled.</td></tr>'}
-        </tbody>
-      </table></div>
-    </div>`;
-  }).join('')||'<div class="card"><p style="text-align:center;color:var(--gray-mid);padding:32px;">No modules created yet.</p></div>'}`;
+// ═══════════════════════════════════════
+//  HOD VIEWS
+// ═══════════════════════════════════════
+function renderHOD(page,el){
+  if(page==='dashboard') el.innerHTML=hodDashboard();
+  if(page==='classes')   el.innerHTML=hodClasses();
+  if(page==='modules')   el.innerHTML=hodModules();
+  if(page==='students')  el.innerHTML=hodStudents();
+  if(page==='teachers')  el.innerHTML=hodTeachers();
+  if(page==='reports')   el.innerHTML=hodReports();
 }
 
-// ═══════════════════════════════════════════════
-//  TEACHER
-// ═══════════════════════════════════════════════
-function renderTeacher(page,el) {
-  if(page==='dashboard')  el.innerHTML=teacherDashboard();
-  if(page==='my-modules') el.innerHTML=teacherModulesPage();
-  if(page==='reports')    el.innerHTML=teacherReports();
-}
-function teacherDashboard() {
-  const myMods=DB.modules.filter(m=>m.teacherId===currentUser.id);
-  const totalSess=DB.sessions.filter(s=>myMods.find(m=>m.id===s.moduleId)).length;
-  const uniqStudents=new Set(DB.enrollments.filter(e=>myMods.find(m=>m.id===e.moduleId)).map(e=>e.studentId)).size;
+function hodDashboard(){
+  const cls=myDeptClasses().length, mods=myDeptModules().length;
+  const teachers=myDeptTeachers().length, studs=myDeptStudents().length;
+  const sess=DB.sessions.filter(s=>s.deptId===CU.deptId).length;
+  const dept=getDept(CU.deptId);
+  let elig=0,notElig=0;
+  myDeptStudents().forEach(s=>{
+    DB.modules.filter(m=>m.deptId===CU.deptId).forEach(m=>{
+      if(!DB.enrollments.find(e=>e.studentId===s.id&&e.moduleId===m.id))return;
+      const st=modStats(s.id,m.id);
+      if(st.total>0){pct(st.present,st.total)>=75?elig++:notElig++;}
+    });
+  });
   return `
-  <div class="page-header">
-    <div class="page-header-left">
-      <div class="page-title">Welcome, <span>${currentUser.name.split(' ')[0]}</span></div>
-      <div class="page-sub">KIUT Attendance System — Lecturer Portal</div>
+  <div class="ph">
+    <div class="ph-left">
+      <div class="ph-title">HOD <em>Dashboard</em></div>
+      <div class="ph-sub">${dept?.name||'Department'}</div>
     </div>
-    <div class="page-badge">${myMods.length} Module${myMods.length!==1?'s':''}</div>
+    <div class="ph-badge">${dept?.code||''}</div>
   </div>
   <div class="stats-row">
-    <div class="stat-box sb-yellow"><div class="stat-icon">📚</div><div class="stat-value">${myMods.length}</div><div class="stat-label">My Modules</div></div>
-    <div class="stat-box sb-green"><div class="stat-icon">🎓</div><div class="stat-value">${uniqStudents}</div><div class="stat-label">Students</div></div>
-    <div class="stat-box sb-black"><div class="stat-icon">📆</div><div class="stat-value">${totalSess}</div><div class="stat-label">Sessions Held</div></div>
+    <div class="sbox sb-b"><div class="sbox-icon">🏫</div><div class="sbox-val">${cls}</div><div class="sbox-lbl">Classes</div></div>
+    <div class="sbox sb-y"><div class="sbox-icon">📚</div><div class="sbox-val">${mods}</div><div class="sbox-lbl">Modules</div></div>
+    <div class="sbox sb-g"><div class="sbox-icon">👨‍🏫</div><div class="sbox-val">${teachers}</div><div class="sbox-lbl">Lecturers</div></div>
+    <div class="sbox sb-k"><div class="sbox-icon">🎓</div><div class="sbox-val">${studs}</div><div class="sbox-lbl">Students</div></div>
+    <div class="sbox sb-g"><div class="sbox-icon">✅</div><div class="sbox-val">${elig}</div><div class="sbox-lbl">Eligible</div></div>
+    <div class="sbox sb-d"><div class="sbox-icon">⚠️</div><div class="sbox-val">${notElig}</div><div class="sbox-lbl">Not Eligible</div></div>
   </div>
-  <div class="card">
-    <div class="card-header">
-      <div class="card-title"><div class="card-icon ci-yellow">📚</div>My Assigned Modules</div>
-      <button class="btn btn-primary btn-sm" onclick="navTo('my-modules')">Manage Modules →</button>
+  <div class="g2">
+    <div class="card">
+      <div class="ch"><div class="ct"><div class="ci ci-b">🏫</div>Classes in Dept</div>
+        <button class="btn btn-primary btn-sm" onclick="navTo('classes')">Manage →</button></div>
+      <div class="tw"><table>
+        <thead><tr><th>Class</th><th>Programme</th><th>Modules</th><th>Students</th></tr></thead>
+        <tbody>${myDeptClasses().map(c=>{
+          const prog=getProgram(c.programId);
+          const mods=DB.modules.filter(m=>m.classId===c.id).length;
+          const studs=DB.users.filter(u=>u.role==='student'&&u.classId===c.id).length;
+          return `<tr><td><strong>${c.name}</strong><br><span style="font-size:0.72rem;color:var(--gray-md)">${c.semester}</span></td>
+            <td><span class="badge b-dark">${prog?.code||'—'}</span></td>
+            <td>${mods}</td><td>${studs}</td></tr>`;
+        }).join('')||'<tr class="er"><td colspan="4">No classes.</td></tr>'}</tbody>
+      </table></div>
     </div>
-    <div class="module-cards">
-    ${myMods.length?myMods.map(m=>{
-      const en=DB.enrollments.filter(e=>e.moduleId===m.id).length;
-      const se=DB.sessions.filter(s=>s.moduleId===m.id).length;
-      return `<div class="module-card" onclick="openModule('${m.id}')">
-        <div class="module-card-code">${m.code}</div>
-        <div class="module-card-name">${m.name}</div>
-        <div class="module-card-meta"><span>👥 ${en} students</span><span>📆 ${se} sessions</span></div>
-      </div>`;
-    }).join(''):'<p style="color:var(--gray-mid);padding:14px;font-style:italic;">No modules assigned to you yet.</p>'}
+    <div class="card">
+      <div class="ch"><div class="ct"><div class="ci ci-y">📚</div>Module Assignments</div>
+        <button class="btn btn-primary btn-sm" onclick="navTo('modules')">Manage →</button></div>
+      <div class="tw"><table>
+        <thead><tr><th>Module</th><th>Class</th><th>Lecturer</th><th>Sessions</th></tr></thead>
+        <tbody>${myDeptModules().map(m=>{
+          const t=getUser(m.teacherId),cl=getClass(m.classId);
+          const sess=DB.sessions.filter(s=>s.moduleId===m.id).length;
+          return `<tr><td><span class="badge b-dark">${m.code}</span> ${m.name}</td>
+            <td>${cl?.name||'—'}</td>
+            <td>${t?.name||'<span class="badge b-warn">Unassigned</span>'}</td>
+            <td>${sess}</td></tr>`;
+        }).join('')||'<tr class="er"><td colspan="4">No modules.</td></tr>'}</tbody>
+      </table></div>
     </div>
   </div>`;
 }
-function teacherModulesPage() {
-  const myMods=DB.modules.filter(m=>m.teacherId===currentUser.id);
-  if(!myMods.length) return `<div class="page-header"><div class="page-header-left"><div class="page-title">My <span>Modules</span></div></div></div>
-    <div class="card"><p style="text-align:center;color:var(--gray-mid);padding:32px;font-style:italic;">No modules have been assigned to you by the admin yet.</p></div>`;
+
+function hodClasses(){
+  const dept=getDept(CU.deptId);
+  const myProgs=myDeptPrograms();
   return `
-  <div class="page-header"><div class="page-header-left"><div class="page-title">My <span>Modules</span></div><div class="page-sub">Each module is managed independently</div></div></div>
-  <div class="tab-row">
-    ${myMods.map((m,i)=>`<button class="tab-btn ${i===0?'active':''}" onclick="switchTab('mmod','mmod-${m.id}',this)">${m.code}: ${m.name}</button>`).join('')}
-  </div>
-  ${myMods.map((m,i)=>`<div id="mmod-${m.id}" class="tab-pane ${i===0?'active':''}">${modulePanel(m)}</div>`).join('')}`;
-}
-function modulePanel(m) {
-  const enrolled=DB.enrollments.filter(e=>e.moduleId===m.id).map(e=>DB.users.find(u=>u.id===e.studentId)).filter(Boolean);
-  const sessions=DB.sessions.filter(s=>s.moduleId===m.id).sort((a,b)=>b.date.localeCompare(a.date));
-  const today=new Date().toISOString().split('T')[0];
-  return `
-  <div class="two-col">
-    <div>
-      <div class="card">
-        <div class="card-header"><div class="card-title"><div class="card-icon ci-yellow">📝</div>Record New Session</div></div>
-        <div class="form-grid">
-          <div class="form-group"><label>Date</label><input type="date" id="sd-date-${m.id}" value="${today}"/></div>
-          <div class="form-group"><label>Topic Covered</label><input id="sd-topic-${m.id}" placeholder="e.g. Binary Trees"/></div>
+  <div class="ph"><div class="ph-left"><div class="ph-title">Class <em>Management</em></div>
+    <div class="ph-sub">${dept?.name} — Manage academic classes</div></div></div>
+  <div class="g2">
+    <div class="card">
+      <div class="ch"><div class="ct"><div class="ci ci-y">➕</div>Create Class</div></div>
+      ${myProgs.length===0?`<div class="alert alert-warn">⚠ No programmes found for your department. Ask the Dean to create programmes first.</div>`:''}
+      <div class="fg fg-2">
+        <div class="fgroup"><label>Class Name</label><input id="cl-name" placeholder="e.g. DCS Year 1"/></div>
+        <div class="fgroup"><label>Programme</label>
+          <select id="cl-prog"><option value="">-- Select Programme --</option>
+          ${myProgs.map(p=>`<option value="${p.id}">${p.code} — ${p.name}</option>`).join('')}</select>
         </div>
-        <hr class="sep"/>
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-          <span style="font-size:0.72rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:0.07em;">Mark Attendance — ${enrolled.length} student(s)</span>
-          <div style="display:flex;gap:6px;">
-            <button class="btn btn-ghost btn-sm" onclick="markAllMod('${m.id}','P')">✅ All Present</button>
-            <button class="btn btn-ghost btn-sm" onclick="markAllMod('${m.id}','A')">❌ All Absent</button>
+        <div class="fgroup"><label>Year</label>
+          <select id="cl-year"><option value="1">Year 1</option><option value="2">Year 2</option><option value="3">Year 3</option><option value="4">Year 4</option></select>
+        </div>
+        <div class="fgroup"><label>Semester</label>
+          <input id="cl-sem" placeholder="e.g. Semester 1 2024/25"/></div>
+      </div>
+      <div class="fa"><button class="btn btn-primary" onclick="addClass()">➕ Create Class</button></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct"><div class="ci ci-g">🏫</div>Department Classes</div></div>
+      <div class="tw"><table>
+        <thead><tr><th>Class</th><th>Programme</th><th>Year</th><th>Semester</th><th>Modules</th><th>Students</th><th></th></tr></thead>
+        <tbody>${myDeptClasses().map(c=>{
+          const prog=getProgram(c.programId);
+          const mods=DB.modules.filter(m=>m.classId===c.id).length;
+          const studs=DB.users.filter(u=>u.role==='student'&&u.classId===c.id).length;
+          return `<tr>
+            <td><strong>${c.name}</strong></td>
+            <td><span class="badge b-dark">${prog?.code||'—'}</span></td>
+            <td>Year ${c.year}</td>
+            <td><span style="font-size:0.75rem;color:var(--gray-md)">${c.semester}</span></td>
+            <td>${mods}</td><td>${studs}</td>
+            <td><button class="btn btn-danger btn-xs" onclick="deleteClass('${c.id}')">🗑</button></td></tr>`;
+        }).join('')||'<tr class="er"><td colspan="7">No classes yet.</td></tr>'}</tbody>
+      </table></div>
+    </div>
+  </div>`;
+}
+
+function hodModules(){
+  const dept=getDept(CU.deptId);
+  const myClasses=myDeptClasses();
+  const myTeachers=myDeptTeachers();
+  return `
+  <div class="ph"><div class="ph-left"><div class="ph-title">Module <em>Management</em></div>
+    <div class="ph-sub">${dept?.name} — Assign modules to classes and lecturers</div></div></div>
+  <div class="g2">
+    <div class="card">
+      <div class="ch"><div class="ct"><div class="ci ci-y">➕</div>Create & Assign Module</div></div>
+      <div class="fg fg-2">
+        <div class="fgroup"><label>Module Code</label><input id="mc-code" placeholder="e.g. CS301"/></div>
+        <div class="fgroup"><label>Module Name</label><input id="mc-name" placeholder="e.g. Operating Systems"/></div>
+        <div class="fgroup"><label>Assign to Class</label>
+          <select id="mc-class"><option value="">-- Select Class --</option>
+          ${myClasses.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}</select>
+        </div>
+        <div class="fgroup"><label>Assign Lecturer</label>
+          <select id="mc-teacher"><option value="">-- Select Lecturer --</option>
+          ${myTeachers.map(t=>`<option value="${t.id}">${t.name}</option>`).join('')}</select>
+        </div>
+        <div class="fgroup"><label>Credit Hours</label>
+          <select id="mc-credits"><option value="1">1</option><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option></select>
+        </div>
+      </div>
+      <div class="fa"><button class="btn btn-primary" onclick="addModule()">➕ Add Module</button></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct"><div class="ci ci-g">📚</div>Department Modules</div></div>
+      <div class="tw"><table>
+        <thead><tr><th>Code</th><th>Module</th><th>Class</th><th>Lecturer</th><th>Enrolled</th><th>Sessions</th><th></th></tr></thead>
+        <tbody>${myDeptModules().map(m=>{
+          const t=getUser(m.teacherId),cl=getClass(m.classId);
+          const en=DB.enrollments.filter(e=>e.moduleId===m.id).length;
+          const sess=DB.sessions.filter(s=>s.moduleId===m.id).length;
+          return `<tr>
+            <td><span class="badge b-dark">${m.code}</span></td>
+            <td><strong>${m.name}</strong></td>
+            <td>${cl?`<span class="badge b-info">${cl.name}</span>`:'-'}</td>
+            <td>${t?.name||'<span class="badge b-warn">Unassigned</span>'}</td>
+            <td>${en}</td><td>${sess}</td>
+            <td><button class="btn btn-danger btn-xs" onclick="deleteModule('${m.id}')">🗑</button></td></tr>`;
+        }).join('')||'<tr class="er"><td colspan="7">No modules yet.</td></tr>'}</tbody>
+      </table></div>
+    </div>
+  </div>`;
+}
+
+function hodStudents(){
+  const dept=getDept(CU.deptId);
+  const myClasses=myDeptClasses();
+  const myModules=myDeptModules();
+  const studs=myDeptStudents();
+  return `
+  <div class="ph"><div class="ph-left"><div class="ph-title">Student <em>Management</em></div>
+    <div class="ph-sub">${dept?.name} — Register and manage students</div></div></div>
+  <div class="tab-row">
+    <button class="tab-btn active" onclick="switchTab('st','st-upload',this)">📤 Upload from Excel</button>
+    <button class="tab-btn" onclick="switchTab('st','st-manual',this)">✏ Add Manually</button>
+    <button class="tab-btn" onclick="switchTab('st','st-list',this)">📋 Student List</button>
+    <button class="tab-btn" onclick="switchTab('st','st-enroll',this)">🔗 Enrollments</button>
+  </div>
+
+  <!-- EXCEL UPLOAD -->
+  <div id="st-upload" class="tab-pane active">
+    <div class="card">
+      <div class="ch"><div class="ct"><div class="ci ci-y">📤</div>Bulk Register Students via Excel</div></div>
+      <div class="alert alert-info">
+        ℹ Upload an Excel file (.xlsx/.xls) with columns: <strong>RegNo, Name, Email, Username, Password, Class</strong>.
+        The "Class" column should match a class name (e.g. "DCS Year 1"). All students will be registered under <strong>${dept?.name}</strong>.
+      </div>
+      <div style="margin-bottom:14px;">
+        <button class="btn btn-ghost btn-sm" onclick="downloadTemplate()">⬇ Download Template</button>
+      </div>
+      <div class="fgroup" style="margin-bottom:14px;">
+        <label>Assign to Class (overrides Excel class column)</label>
+        <select id="upload-class">
+          <option value="">-- Use class from Excel --</option>
+          ${myClasses.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}
+        </select>
+      </div>
+      <div class="upload-box" id="upload-box" onclick="document.getElementById('xls-input').click()">
+        <input type="file" id="xls-input" accept=".xlsx,.xls" style="display:none" onchange="handleXlsUpload(event)"/>
+        <div class="upload-icon">📊</div>
+        <div class="upload-title">Click to select Excel file</div>
+        <div class="upload-sub">Supports .xlsx and .xls — max 500 students per upload</div>
+      </div>
+      <div id="xls-preview"></div>
+      <div id="upload-actions" style="display:none;" class="fa">
+        <button class="btn btn-primary" onclick="commitXlsUpload()">✅ Register All Students</button>
+        <button class="btn btn-ghost" onclick="clearXlsUpload()">✕ Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MANUAL ADD -->
+  <div id="st-manual" class="tab-pane">
+    <div class="card">
+      <div class="ch"><div class="ct"><div class="ci ci-g">✏</div>Add Student Manually</div></div>
+      <div class="fg fg-3">
+        <div class="fgroup"><label>Full Name</label><input id="ms-name" placeholder="Full name"/></div>
+        <div class="fgroup"><label>Reg No</label><input id="ms-reg" placeholder="KIUT/CS/2024/XXX"/></div>
+        <div class="fgroup"><label>Username</label><input id="ms-user" placeholder="login username"/></div>
+        <div class="fgroup"><label>Email</label><input id="ms-email" placeholder="email@kiut.ac.tz"/></div>
+        <div class="fgroup"><label>Password</label><input id="ms-pass" type="password" placeholder="password"/></div>
+        <div class="fgroup"><label>Class</label>
+          <select id="ms-class"><option value="">-- Select Class --</option>
+          ${myClasses.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}</select>
+        </div>
+      </div>
+      <div class="fa"><button class="btn btn-primary" onclick="addStudentManual()">➕ Add Student</button></div>
+    </div>
+  </div>
+
+  <!-- STUDENT LIST -->
+  <div id="st-list" class="tab-pane">
+    <div class="card">
+      <div class="ch"><div class="ct"><div class="ci ci-g">🎓</div>Students in ${dept?.code||'Dept'} (${studs.length})</div></div>
+      <div class="tw"><table>
+        <thead><tr><th>Reg No</th><th>Name</th><th>Username</th><th>Class</th><th>Enrolled Modules</th><th></th></tr></thead>
+        <tbody>${studs.map(s=>{
+          const cl=getClass(s.classId);
+          const mods=DB.enrollments.filter(e=>e.studentId===s.id).map(e=>getModule(e.moduleId)).filter(Boolean);
+          return `<tr>
+            <td><span class="badge b-green">${s.regNo||'—'}</span></td>
+            <td><strong>${s.name}</strong></td>
+            <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.76rem">${s.username}</span></td>
+            <td>${cl?`<span class="badge b-info">${cl.name}</span>`:'-'}</td>
+            <td>${mods.map(m=>`<span class="badge b-dark">${m.code}</span>`).join(' ')||'<span class="badge b-gray">None</span>'}</td>
+            <td><button class="btn btn-danger btn-xs" onclick="delUser('${s.id}')">🗑</button></td></tr>`;
+        }).join('')||'<tr class="er"><td colspan="6">No students registered.</td></tr>'}</tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ENROLLMENTS -->
+  <div id="st-enroll" class="tab-pane">
+    <div class="card">
+      <div class="ch"><div class="ct"><div class="ci ci-b">🔗</div>Manage Module Enrollments</div></div>
+      <div class="alert alert-info">ℹ Enroll or unenroll students from specific modules within your department.</div>
+      <div class="fg fg-3" style="margin-bottom:16px;">
+        <div class="fgroup"><label>Student</label>
+          <select id="en-stu">
+            ${studs.map(s=>`<option value="${s.id}">${s.name} (${s.regNo||s.username})</option>`).join('')}
+          </select>
+        </div>
+        <div class="fgroup"><label>Module</label>
+          <select id="en-mod">
+            ${myModules.map(m=>`<option value="${m.id}">${m.code}: ${m.name}</option>`).join('')}
+          </select>
+        </div>
+        <div class="fgroup" style="align-self:flex-end;">
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-primary" onclick="hodEnroll()">Enroll</button>
+            <button class="btn btn-danger" onclick="hodUnenroll()">Unenroll</button>
           </div>
         </div>
-        <div class="att-list" id="att-list-${m.id}">
-          ${enrolled.length?enrolled.map(s=>attRow(s,m.id)).join(''):'<p style="color:var(--gray-mid);font-style:italic;padding:10px;">No students enrolled in this module.</p>'}
+      </div>
+      <div id="en-msg" style="font-size:0.82rem;font-weight:600;margin-bottom:14px;min-height:18px;"></div>
+      <div class="tw"><table>
+        <thead><tr><th>Student</th><th>Reg No</th><th>Enrolled Modules</th></tr></thead>
+        <tbody>${studs.map(s=>{
+          const mods=DB.enrollments.filter(e=>e.studentId===s.id).map(e=>getModule(e.moduleId)).filter(Boolean);
+          return `<tr><td><strong>${s.name}</strong></td>
+            <td><span class="badge b-green">${s.regNo||'—'}</span></td>
+            <td>${mods.map(m=>`<span class="badge b-dark">${m.code}: ${m.name}</span>`).join(' ')||'<em style="color:var(--gray-md)">Not enrolled</em>'}</td></tr>`;
+        }).join('')||'<tr class="er"><td colspan="3">No students.</td></tr>'}</tbody>
+      </table></div>
+    </div>
+  </div>`;
+}
+
+function hodTeachers(){
+  const dept=getDept(CU.deptId);
+  const teachers=myDeptTeachers();
+  return `
+  <div class="ph"><div class="ph-left"><div class="ph-title">Lecturer <em>Management</em></div>
+    <div class="ph-sub">${dept?.name}</div></div></div>
+  <div class="g2">
+    <div class="card">
+      <div class="ch"><div class="ct"><div class="ci ci-y">➕</div>Add Lecturer</div></div>
+      <div class="fg fg-2">
+        <div class="fgroup"><label>Full Name</label><input id="tc-name" placeholder="Dr. Jane Doe"/></div>
+        <div class="fgroup"><label>Username</label><input id="tc-user" placeholder="login username"/></div>
+        <div class="fgroup"><label>Email</label><input id="tc-email" placeholder="email@kiut.ac.tz"/></div>
+        <div class="fgroup"><label>Password</label><input id="tc-pass" type="password" placeholder="password"/></div>
+      </div>
+      <div class="fa"><button class="btn btn-primary" onclick="addTeacher()">➕ Add Lecturer</button></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct"><div class="ci ci-g">👨‍🏫</div>Lecturers in ${dept?.code}</div></div>
+      <div class="tw"><table>
+        <thead><tr><th>Name</th><th>Username</th><th>Email</th><th>Assigned Modules</th><th></th></tr></thead>
+        <tbody>${teachers.map(t=>{
+          const mods=DB.modules.filter(m=>m.teacherId===t.id&&m.deptId===CU.deptId);
+          return `<tr>
+            <td><strong>${t.name}</strong></td>
+            <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.76rem">${t.username}</span></td>
+            <td>${t.email||'—'}</td>
+            <td>${mods.map(m=>`<span class="badge b-dark">${m.code}</span>`).join(' ')||'<span class="badge b-gray">None</span>'}</td>
+            <td><button class="btn btn-danger btn-xs" onclick="delUser('${t.id}')">🗑</button></td></tr>`;
+        }).join('')||'<tr class="er"><td colspan="5">No lecturers yet.</td></tr>'}</tbody>
+      </table></div>
+    </div>
+  </div>`;
+}
+
+function hodReports(){
+  const dept=getDept(CU.deptId);
+  const mods=myDeptModules();
+  return `
+  <div class="ph"><div class="ph-left"><div class="ph-title">Department <em>Reports</em></div>
+    <div class="ph-sub">${dept?.name} — Semester attendance reports</div></div></div>
+  ${mods.length?mods.map(m=>moduleReportCard(m,true)).join('')
+    :'<div class="card"><p style="text-align:center;color:var(--gray-md);padding:32px;">No modules found in your department.</p></div>'}`;
+}
+
+// ═══════════════════════════════════════
+//  TEACHER VIEWS
+// ═══════════════════════════════════════
+function renderTeacher(page,el){
+  if(page==='dashboard')  el.innerHTML=teacherDashboard();
+  if(page==='my-modules') el.innerHTML=teacherModules();
+  if(page==='reports')    el.innerHTML=teacherReports();
+}
+function teacherDashboard(){
+  const myMods=DB.modules.filter(m=>m.teacherId===CU.id);
+  const sess=DB.sessions.filter(s=>myMods.find(m=>m.id===s.moduleId)).length;
+  const uniq=new Set(DB.enrollments.filter(e=>myMods.find(m=>m.id===e.moduleId)).map(e=>e.studentId)).size;
+  const dept=getDept(CU.deptId);
+  return `
+  <div class="ph">
+    <div class="ph-left"><div class="ph-title">Welcome, <em>${CU.name.split(' ').slice(-1)[0]}</em></div>
+      <div class="ph-sub">Lecturer Portal — ${dept?.name||''}</div></div>
+    <div class="ph-badge">${myMods.length} Module${myMods.length!==1?'s':''}</div>
+  </div>
+  <div class="stats-row">
+    <div class="sbox sb-y"><div class="sbox-icon">📚</div><div class="sbox-val">${myMods.length}</div><div class="sbox-lbl">My Modules</div></div>
+    <div class="sbox sb-g"><div class="sbox-icon">🎓</div><div class="sbox-val">${uniq}</div><div class="sbox-lbl">Students</div></div>
+    <div class="sbox sb-k"><div class="sbox-icon">📆</div><div class="sbox-val">${sess}</div><div class="sbox-lbl">Sessions</div></div>
+  </div>
+  <div class="card">
+    <div class="ch"><div class="ct"><div class="ci ci-y">📚</div>My Assigned Modules</div>
+      <button class="btn btn-primary btn-sm" onclick="navTo('my-modules')">Manage →</button></div>
+    <div class="mod-grid">
+    ${myMods.length?myMods.map(m=>{
+      const en=DB.enrollments.filter(e=>e.moduleId===m.id).length;
+      const se=DB.sessions.filter(s=>s.moduleId===m.id).length;
+      const cl=getClass(m.classId);
+      return `<div class="mod-card" onclick="openModule('${m.id}')">
+        <div class="mc-code">${m.code} ${cl?'· '+cl.name:''}</div>
+        <div class="mc-name">${m.name}</div>
+        <div class="mc-meta"><span>👥 ${en} students</span><span>📆 ${se} sessions</span></div>
+      </div>`;
+    }).join(''):'<p style="color:var(--gray-md);padding:14px;font-style:italic;">No modules assigned yet.</p>'}
+    </div>
+  </div>`;
+}
+function teacherModules(){
+  const myMods=DB.modules.filter(m=>m.teacherId===CU.id);
+  if(!myMods.length) return `
+    <div class="ph"><div class="ph-left"><div class="ph-title">My <em>Modules</em></div></div></div>
+    <div class="card"><p style="text-align:center;color:var(--gray-md);padding:32px;">No modules assigned to you yet. Contact your HOD.</p></div>`;
+  return `
+  <div class="ph"><div class="ph-left"><div class="ph-title">My <em>Modules</em></div>
+    <div class="ph-sub">Each module is managed independently</div></div></div>
+  <div class="tab-row">
+    ${myMods.map((m,i)=>`<button class="tab-btn ${i===0?'active':''}" onclick="switchTab('tm','tm-${m.id}',this)">${m.code}</button>`).join('')}
+  </div>
+  ${myMods.map((m,i)=>`<div id="tm-${m.id}" class="tab-pane ${i===0?'active':''}">${modulePanel(m)}</div>`).join('')}`;
+}
+function modulePanel(m){
+  const enrolled=DB.enrollments.filter(e=>e.moduleId===m.id).map(e=>getUser(e.studentId)).filter(Boolean);
+  const sessions=DB.sessions.filter(s=>s.moduleId===m.id).sort((a,b)=>b.date.localeCompare(a.date));
+  const cl=getClass(m.classId);
+  const today=new Date().toISOString().split('T')[0];
+  return `
+  <div class="g2">
+    <div>
+      <div class="card">
+        <div class="ch"><div class="ct"><div class="ci ci-y">📝</div>Record Session
+          ${cl?`<span class="badge b-info" style="margin-left:4px">${cl.name}</span>`:''}
+        </div></div>
+        <div class="fg fg-2" style="margin-bottom:12px;">
+          <div class="fgroup"><label>Date</label><input type="date" id="sd-d-${m.id}" value="${today}"/></div>
+          <div class="fgroup"><label>Topic Covered</label><input id="sd-t-${m.id}" placeholder="e.g. Recursion & Backtracking"/></div>
         </div>
-        <div class="form-actions" style="margin-top:14px;">
+        <hr class="sep"/>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <span style="font-size:0.68rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:var(--gray-md);">Mark Attendance (${enrolled.length} students)</span>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-ghost btn-sm" onclick="markAll('${m.id}','P')">✅ All Present</button>
+            <button class="btn btn-ghost btn-sm" onclick="markAll('${m.id}','A')">❌ All Absent</button>
+          </div>
+        </div>
+        <div class="att-list" id="al-${m.id}">
+          ${enrolled.length?enrolled.map(s=>attRow(s,m.id)).join('')
+            :'<p style="color:var(--gray-md);font-style:italic;padding:10px;">No students enrolled. HOD must enroll students first.</p>'}
+        </div>
+        <div class="fa" style="margin-top:12px;">
           <button class="btn btn-primary" onclick="saveSession('${m.id}')">💾 Save Session</button>
         </div>
       </div>
     </div>
     <div>
       <div class="card">
-        <div class="card-header"><div class="card-title"><div class="card-icon ci-green">📊</div>Student Summary</div></div>
-        <div class="table-wrap"><table>
-          <thead><tr><th>Student</th><th>Reg No</th><th>Present</th><th>%</th></tr></thead>
-          <tbody>
-          ${enrolled.length?enrolled.map(s=>{
-            const st=moduleStats(s.id,m.id);const p=pct(st.present,st.total);
+        <div class="ch"><div class="ct"><div class="ci ci-g">📊</div>Student Summary</div></div>
+        <div class="tw"><table>
+          <thead><tr><th>Student</th><th>Reg</th><th>P/T</th><th>%</th><th>Status</th></tr></thead>
+          <tbody>${enrolled.length?enrolled.map(s=>{
+            const st=modStats(s.id,m.id),p=pct(st.present,st.total);
             return `<tr><td><strong>${s.name}</strong></td>
-              <td><span class="badge badge-student" style="font-size:0.68rem">${s.regNo||'—'}</span></td>
+              <td><span class="badge b-green" style="font-size:0.65rem">${s.regNo||'—'}</span></td>
               <td>${st.present}/${st.total}</td>
-              <td><span class="pct-val" style="color:${pctColor(p)}">${p}%</span>
-                <div class="pbar"><div class="pfill ${pctClass(p)}" style="width:${Math.min(p,100)}%"></div></div></td>
-            </tr>`;
-          }).join(''):'<tr class="empty-row"><td colspan="4">No students enrolled.</td></tr>'}
-          </tbody>
+              <td><span class="pct-v" style="color:${pctColor(p)}">${p}%</span>
+                <div class="pbar"><div class="pf ${pctClass(p)}" style="width:${Math.min(p,100)}%"></div></div></td>
+              <td>${eligBadge(p)}</td></tr>`;
+          }).join(''):'<tr class="er"><td colspan="5">No students.</td></tr>'}</tbody>
         </table></div>
       </div>
       <div class="card">
-        <div class="card-header"><div class="card-title"><div class="card-icon ci-dark">📆</div>Session History</div></div>
-        <div class="table-wrap"><table>
+        <div class="ch"><div class="ct"><div class="ci ci-k">📆</div>Session History</div></div>
+        <div class="tw"><table>
           <thead><tr><th>Date</th><th>Topic</th><th>P</th><th>A</th><th></th></tr></thead>
-          <tbody>
-          ${sessions.length?sessions.map(s=>{
-            const v=Object.values(s.records);const p=v.filter(x=>x==='P').length,a=v.filter(x=>x==='A').length;
+          <tbody>${sessions.length?sessions.map(s=>{
+            const v=Object.values(s.records),p=v.filter(x=>x==='P').length,a=v.filter(x=>x==='A').length;
             return `<tr>
-              <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">${s.date}</span></td>
-              <td>${s.topic}</td>
+              <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.76rem">${s.date}</span></td>
+              <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${s.topic}</td>
               <td style="color:var(--green);font-weight:700">${p}</td>
               <td style="color:var(--danger);font-weight:700">${a}</td>
               <td>
-                <button class="btn btn-ghost btn-sm btn-icon" onclick="viewSessionModal('${s.id}')">👁</button>
-                <button class="btn btn-danger btn-sm btn-icon" onclick="deleteSession('${s.id}','${m.id}')">🗑</button>
-              </td>
-            </tr>`;
-          }).join(''):'<tr class="empty-row"><td colspan="5">No sessions recorded yet.</td></tr>'}
-          </tbody>
+                <button class="btn btn-ghost btn-xs btn-icon" onclick="viewSession('${s.id}')">👁</button>
+                <button class="btn btn-danger btn-xs btn-icon" onclick="delSession('${s.id}','${m.id}')">🗑</button>
+              </td></tr>`;
+          }).join(''):'<tr class="er"><td colspan="5">No sessions yet.</td></tr>'}</tbody>
         </table></div>
       </div>
     </div>
   </div>`;
 }
-function attRow(student,moduleId) {
-  const key=`att_${moduleId}_${student.id}`;const val=tempAtt[key];
-  return `<div class="att-row ${val?'marked-'+val:''}" id="attrow-${moduleId}-${student.id}">
-    <div><div class="att-name">${student.name}</div><div class="att-reg">${student.regNo||student.username}</div></div>
-    <div class="att-btns">
-      <button class="att-btn P ${val==='P'?'sel':''}" onclick="setAttMark('${moduleId}','${student.id}','P')">P</button>
-      <button class="att-btn A ${val==='A'?'sel':''}" onclick="setAttMark('${moduleId}','${student.id}','A')">A</button>
-    </div>
-  </div>`;
-}
-function setAttMark(moduleId,studentId,val) {
-  tempAtt[`att_${moduleId}_${studentId}`]=val;
-  const enrolled=DB.enrollments.filter(e=>e.moduleId===moduleId).map(e=>DB.users.find(u=>u.id===e.studentId)).filter(Boolean);
-  const s=enrolled.find(x=>x.id===studentId);
-  const row=document.getElementById(`attrow-${moduleId}-${studentId}`);
-  if(s&&row) row.outerHTML=attRow(s,moduleId);
-}
-function markAllMod(moduleId,val) {
-  const enrolled=DB.enrollments.filter(e=>e.moduleId===moduleId).map(e=>DB.users.find(u=>u.id===e.studentId)).filter(Boolean);
-  enrolled.forEach(s=>{tempAtt[`att_${moduleId}_${s.id}`]=val;});
-  const c=document.getElementById(`att-list-${moduleId}`);
-  if(c) c.innerHTML=enrolled.map(s=>attRow(s,moduleId)).join('');
-}
-function saveSession(moduleId) {
-  const date=document.getElementById(`sd-date-${moduleId}`)?.value;
-  const topic=document.getElementById(`sd-topic-${moduleId}`)?.value.trim();
-  if(!date||!topic){toast('Date and topic are required.','err');return;}
-  const enrolled=DB.enrollments.filter(e=>e.moduleId===moduleId);
-  if(!enrolled.length){toast('No students enrolled in this module.','err');return;}
-  const unmarked=enrolled.filter(e=>!tempAtt[`att_${moduleId}_${e.studentId}`]);
-  if(unmarked.length){toast(`${unmarked.length} student(s) not marked yet.`,'err');return;}
-  const dup=DB.sessions.findIndex(s=>s.moduleId===moduleId&&s.date===date);
-  if(dup>=0){if(!confirm(`A session for ${date} already exists. Overwrite?`))return;DB.sessions.splice(dup,1);}
-  const records={};
-  enrolled.forEach(e=>{records[e.studentId]=tempAtt[`att_${moduleId}_${e.studentId}`];});
-  DB.sessions.push({id:uid(),moduleId,date,topic,records});
-  DB.sessions.sort((a,b)=>a.date.localeCompare(b.date));
-  enrolled.forEach(e=>{delete tempAtt[`att_${moduleId}_${e.studentId}`];});
-  saveDB();toast('Session saved successfully!');
-  navTo('my-modules');
-}
-function teacherReports() {
-  const myMods=DB.modules.filter(m=>m.teacherId===currentUser.id);
+function teacherReports(){
+  const myMods=DB.modules.filter(m=>m.teacherId===CU.id);
   return `
-  <div class="page-header"><div class="page-header-left"><div class="page-title">Attendance <span>Reports</span></div><div class="page-sub">Semester summary per module</div></div></div>
-  ${myMods.length?myMods.map(m=>{
-    const enrolled=DB.enrollments.filter(e=>e.moduleId===m.id).map(e=>DB.users.find(u=>u.id===e.studentId)).filter(Boolean);
-    const sessions=DB.sessions.filter(s=>s.moduleId===m.id);
-    return `<div class="card">
-      <div class="card-header">
-        <div>
-          <div class="card-title"><div class="card-icon ci-yellow">📚</div>${m.name} <span class="badge badge-module">${m.code}</span></div>
-          <div style="color:var(--gray-mid);font-size:0.78rem;margin-top:4px;">${sessions.length} sessions &nbsp;|&nbsp; ${enrolled.length} students</div>
-        </div>
-        <button class="btn btn-ghost btn-sm" onclick="exportCSV('${m.id}')">⬇ CSV</button>
-      </div>
-      <div class="table-wrap"><table>
-        <thead><tr><th>Reg No</th><th>Name</th><th>Total</th><th>Present</th><th>Absent</th><th>%</th><th>Status</th></tr></thead>
-        <tbody>
-        ${enrolled.length?enrolled.map(s=>{
-          const st=moduleStats(s.id,m.id);const p=pct(st.present,st.total);
-          return `<tr>
-            <td><span class="badge badge-student">${s.regNo||'—'}</span></td>
-            <td><strong>${s.name}</strong></td>
-            <td>${st.total}</td>
-            <td style="color:var(--green);font-weight:700">${st.present}</td>
-            <td style="color:var(--danger);font-weight:700">${st.absent}</td>
-            <td><span class="pct-val" style="color:${pctColor(p)}">${p}%</span>
-              <div class="pbar"><div class="pfill ${pctClass(p)}" style="width:${Math.min(p,100)}%"></div></div></td>
-            <td>${eligBadge(p)}</td>
-          </tr>`;
-        }).join(''):'<tr class="empty-row"><td colspan="7">No students enrolled.</td></tr>'}
-        </tbody>
-      </table></div>
-    </div>`;
-  }).join(''):'<div class="card"><p style="text-align:center;color:var(--gray-mid);padding:32px;">No modules assigned.</p></div>'}`;
+  <div class="ph"><div class="ph-left"><div class="ph-title">My <em>Reports</em></div>
+    <div class="ph-sub">Semester attendance reports for your modules</div></div></div>
+  ${myMods.length?myMods.map(m=>moduleReportCard(m,true)).join('')
+    :'<div class="card"><p style="text-align:center;color:var(--gray-md);padding:32px;">No modules assigned.</p></div>'}`;
 }
 
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════
 //  STUDENT PORTAL
-// ═══════════════════════════════════════════════
-function renderStudent(page,el) { el.innerHTML=studentPortal(); }
-function studentPortal() {
-  const enrolled=DB.enrollments.filter(e=>e.studentId===currentUser.id);
-  const mods=enrolled.map(e=>DB.modules.find(m=>m.id===e.moduleId)).filter(Boolean);
+// ═══════════════════════════════════════
+function renderStudent(page,el){el.innerHTML=studentPortal();}
+function studentPortal(){
+  const enrolled=DB.enrollments.filter(e=>e.studentId===CU.id);
+  const mods=enrolled.map(e=>getModule(e.moduleId)).filter(Boolean);
+  const cl=getClass(CU.classId),dept=getDept(CU.deptId);
   return `
-  <div class="page-header">
-    <div class="page-header-left">
-      <div class="page-title">My <span>Attendance</span></div>
-      <div class="page-sub">Reg No: <strong>${currentUser.regNo||'—'}</strong> &nbsp;·&nbsp; ${currentUser.name} &nbsp;·&nbsp; ${mods.length} module(s) enrolled</div>
+  <div class="ph">
+    <div class="ph-left">
+      <div class="ph-title">My <em>Attendance</em></div>
+      <div class="ph-sub">
+        ${CU.regNo||'—'} &nbsp;·&nbsp; ${CU.name} &nbsp;·&nbsp;
+        ${cl?cl.name:'—'} &nbsp;·&nbsp; ${dept?.code||'—'}
+      </div>
     </div>
-    <div class="page-badge">Student Portal</div>
+    <div class="ph-badge">Student Portal</div>
   </div>
-  ${!mods.length?`<div class="card"><p style="text-align:center;color:var(--gray-mid);padding:32px;">You are not enrolled in any modules yet. Please contact the academic office.</p></div>`
+  ${!mods.length?`<div class="card"><div class="alert alert-warn">⚠ You are not enrolled in any modules yet. Contact your HOD or department office.</div></div>`
   :mods.map(m=>{
-    const teacher=DB.users.find(u=>u.id===m.teacherId);
-    const st=moduleStats(currentUser.id,m.id);
-    const p=pct(st.present,st.total);
+    const teacher=getUser(m.teacherId);
+    const st=modStats(CU.id,m.id),p=pct(st.present,st.total);
     const sessions=DB.sessions.filter(s=>s.moduleId===m.id).sort((a,b)=>b.date.localeCompare(a.date));
-    const smcClass=st.total===0?'smc-neutral':p>=75?'smc-eligible':'smc-not-eligible';
+    const spcls=st.total===0?'sp-neutral':p>=75?'sp-elig':'sp-noelig';
+    const needMore=st.total>0?Math.max(0,Math.ceil(0.75*st.total)-st.present):0;
     return `
-    <div class="student-module-card ${smcClass}">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;">
+    <div class="sp-card ${spcls}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
         <div>
-          <div class="smc-code">${m.code}</div>
-          <div class="smc-name">${m.name}</div>
-          <div class="smc-teacher">Lecturer: ${teacher?.name||'—'}</div>
+          <div class="sp-code">${m.code}</div>
+          <div class="sp-name">${m.name}</div>
+          <div class="sp-teacher">👨‍🏫 ${teacher?.name||'—'}</div>
         </div>
         <div style="text-align:right">
-          <div class="big-pct" style="color:${pctColor(p)}">${p}%</div>
-          <div style="margin-top:6px">${eligBadge(p)}</div>
+          <div class="sp-pct" style="color:${pctColor(p)}">${p}%</div>
+          <div style="margin-top:5px">${eligBadge(p)}</div>
         </div>
       </div>
-      <div class="smc-bar"><div class="pfill ${pctClass(p)}" style="width:${Math.min(p,100)}%;height:100%;border-radius:4px;transition:width 0.5s;"></div></div>
-      <div class="smc-stats">
-        <span>📆 ${st.total} total sessions</span>
+      <div class="sp-bar"><div class="pf ${pctClass(p)}" style="width:${Math.min(p,100)}%;height:100%;border-radius:4px;transition:width 0.5s;"></div></div>
+      <div class="sp-stats">
+        <span>📆 ${st.total} sessions</span>
         <span style="color:var(--green);font-weight:600">✅ ${st.present} present</span>
         <span style="color:var(--danger);font-weight:600">❌ ${st.absent} absent</span>
-        ${st.total>0?`<span style="color:var(--gray-mid)">Need ${Math.max(0,Math.ceil(0.75*st.total)-st.present)} more present to be eligible</span>`:''}
+        ${needMore>0?`<span style="color:var(--warn)">⚠ Need ${needMore} more present for eligibility</span>`:''}
       </div>
       ${sessions.length?`
       <hr class="sep"/>
-      <div style="font-size:0.7rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Session History</div>
-      <div class="table-wrap"><table>
+      <div style="font-size:0.67rem;font-weight:800;text-transform:uppercase;letter-spacing:0.09em;color:var(--gray-md);margin-bottom:9px;">Session History</div>
+      <div class="tw"><table>
         <thead><tr><th>Date</th><th>Topic</th><th>Your Status</th></tr></thead>
-        <tbody>
-        ${sessions.map(s=>{const rec=s.records[currentUser.id];
+        <tbody>${sessions.map(s=>{const rec=s.records[CU.id];
           return `<tr>
-            <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.79rem">${s.date}</span></td>
+            <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.76rem">${s.date}</span></td>
             <td>${s.topic}</td>
-            <td>${rec==='P'?'<span class="badge badge-green">✓ Present</span>':rec==='A'?'<span class="badge badge-red">✗ Absent</span>':'<span class="badge badge-gray">—</span>'}</td>
+            <td>${rec==='P'?'<span class="badge b-green">✓ Present</span>':rec==='A'?'<span class="badge b-red">✗ Absent</span>':'<span class="badge b-gray">—</span>'}</td>
           </tr>`;
-        }).join('')}
-        </tbody>
+        }).join('')}</tbody>
       </table></div>`:''}
     </div>`;
   }).join('')}`;
 }
 
-// ═══════════════════════════════════════════════
-//  ADMIN ACTIONS
-// ═══════════════════════════════════════════════
-function toggleRegNo() {
+// ═══════════════════════════════════════
+//  ATTENDANCE ACTIONS
+// ═══════════════════════════════════════
+function attRow(student,moduleId){
+  const key=`${moduleId}_${student.id}`;const val=tempAtt[key];
+  return `<div class="att-row ${val?'mk-'+val:''}" id="ar-${moduleId}-${student.id}">
+    <div><div class="att-name">${student.name}</div><div class="att-reg">${student.regNo||student.username}</div></div>
+    <div class="att-btns">
+      <button class="att-btn P ${val==='P'?'sel':''}" onclick="setMark('${moduleId}','${student.id}','P')">P</button>
+      <button class="att-btn A ${val==='A'?'sel':''}" onclick="setMark('${moduleId}','${student.id}','A')">A</button>
+    </div>
+  </div>`;
+}
+function setMark(moduleId,studentId,val){
+  tempAtt[`${moduleId}_${studentId}`]=val;
+  const enrolled=DB.enrollments.filter(e=>e.moduleId===moduleId).map(e=>getUser(e.studentId)).filter(Boolean);
+  const s=enrolled.find(x=>x.id===studentId);
+  const row=document.getElementById(`ar-${moduleId}-${studentId}`);
+  if(s&&row) row.outerHTML=attRow(s,moduleId);
+}
+function markAll(moduleId,val){
+  const enrolled=DB.enrollments.filter(e=>e.moduleId===moduleId).map(e=>getUser(e.studentId)).filter(Boolean);
+  enrolled.forEach(s=>{tempAtt[`${moduleId}_${s.id}`]=val;});
+  const c=document.getElementById(`al-${moduleId}`);
+  if(c) c.innerHTML=enrolled.map(s=>attRow(s,moduleId)).join('');
+}
+function saveSession(moduleId){
+  const date=document.getElementById(`sd-d-${moduleId}`)?.value;
+  const topic=document.getElementById(`sd-t-${moduleId}`)?.value.trim();
+  if(!date||!topic){toast('Date and topic required.','err');return;}
+  const enrolled=DB.enrollments.filter(e=>e.moduleId===moduleId);
+  if(!enrolled.length){toast('No students enrolled in this module.','err');return;}
+  const unmarked=enrolled.filter(e=>!tempAtt[`${moduleId}_${e.studentId}`]);
+  if(unmarked.length){toast(`${unmarked.length} student(s) not marked yet.`,'err');return;}
+  const dup=DB.sessions.findIndex(s=>s.moduleId===moduleId&&s.date===date);
+  if(dup>=0){if(!confirm(`Session for ${date} already exists. Overwrite?`))return;DB.sessions.splice(dup,1);}
+  const m=getModule(moduleId);
+  const records={};
+  enrolled.forEach(e=>{records[e.studentId]=tempAtt[`${moduleId}_${e.studentId}`];});
+  DB.sessions.push({id:uid(),moduleId,classId:m?.classId,deptId:m?.deptId,date,topic,records});
+  DB.sessions.sort((a,b)=>a.date.localeCompare(b.date));
+  enrolled.forEach(e=>{delete tempAtt[`${moduleId}_${e.studentId}`];});
+  saveDB();toast('Session saved!');
+  navTo('my-modules');
+}
+function viewSession(sessionId){
+  const s=DB.sessions.find(x=>x.id===sessionId);if(!s)return;
+  const m=getModule(s.moduleId);
+  document.getElementById('mo-title').textContent=`Session Details — ${s.date}`;
+  const rows=Object.entries(s.records).map(([uid,val])=>{
+    const u=getUser(uid);
+    return `<tr><td><span class="badge b-green">${u?.regNo||'—'}</span></td><td>${u?.name||uid}</td>
+      <td>${val==='P'?'<span class="badge b-green">Present</span>':'<span class="badge b-red">Absent</span>'}</td></tr>`;
+  }).join('');
+  document.getElementById('mo-body').innerHTML=`
+    <p style="font-size:0.8rem;color:var(--gray-md);margin-bottom:3px;">Module: <strong style="color:var(--green-dark)">${m?.code} — ${m?.name}</strong></p>
+    <p style="font-size:0.8rem;color:var(--gray-md);margin-bottom:14px;">Topic: <strong style="color:var(--charcoal)">${s.topic}</strong></p>
+    <div class="tw"><table><thead><tr><th>Reg No</th><th>Student</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  document.getElementById('mo-actions').innerHTML=`<button class="btn btn-ghost" onclick="closeMo()">Close</button>`;
+  document.getElementById('modal').classList.add('open');
+}
+function delSession(sessionId,moduleId){
+  if(!confirm('Delete this session?'))return;
+  DB.sessions=DB.sessions.filter(s=>s.id!==sessionId);
+  saveDB();toast('Session deleted.','info');navTo('my-modules');
+}
+
+// ═══════════════════════════════════════
+//  DEAN ACTIONS
+// ═══════════════════════════════════════
+function addDept(){
+  const code=document.getElementById('d-code')?.value.trim();
+  const name=document.getElementById('d-name')?.value.trim();
+  const hodId=document.getElementById('d-hod')?.value;
+  if(!code||!name){toast('Code and name required.','err');return;}
+  if(DB.departments.find(d=>d.code===code)){toast('Department code exists.','err');return;}
+  const id=uid();
+  DB.departments.push({id,name,code,hodId:hodId||null});
+  if(hodId){const hod=getUser(hodId);if(hod)hod.deptId=id;}
+  saveDB();toast(`Department ${code} created.`);navTo('departments');
+}
+function deleteDept(id){
+  if(!confirm('Delete this department? All associated data will be removed.'))return;
+  DB.departments=DB.departments.filter(d=>d.id!==id);
+  saveDB();toast('Department deleted.','info');navTo('departments');
+}
+function addProgram(){
+  const code=document.getElementById('pg-code')?.value.trim();
+  const name=document.getElementById('pg-name')?.value.trim();
+  const deptId=document.getElementById('pg-dept')?.value;
+  const duration=parseInt(document.getElementById('pg-dur')?.value)||2;
+  if(!code||!name||!deptId){toast('All fields required.','err');return;}
+  if(DB.programs.find(p=>p.code===code)){toast('Programme code exists.','err');return;}
+  DB.programs.push({id:uid(),code,name,deptId,duration});
+  saveDB();toast(`Programme ${code} created.`);navTo('programs');
+}
+function deleteProgram(id){
+  if(!confirm('Delete programme?'))return;
+  DB.programs=DB.programs.filter(p=>p.id!==id);
+  DB.classes=DB.classes.filter(c=>c.programId!==id);
+  saveDB();toast('Programme deleted.','info');navTo('programs');
+}
+function onRoleChange(){
   const role=document.getElementById('nu-role')?.value;
-  const g=document.getElementById('reg-no-group');
-  if(g) g.style.opacity=role==='student'?'1':'0.4';
+  const rg=document.getElementById('nu-reg-g'),cg=document.getElementById('nu-class-g');
+  if(rg) rg.style.display=role==='student'?'flex':'none';
+  if(cg) cg.style.display=role==='student'?'flex':'none';
 }
-function addUser() {
-  const name=document.getElementById('nu-name').value.trim();
-  const uname=document.getElementById('nu-user').value.trim();
-  const pass=document.getElementById('nu-pass').value;
-  const email=document.getElementById('nu-email').value.trim();
-  const role=document.getElementById('nu-role').value;
-  const reg=document.getElementById('nu-reg').value.trim();
-  if(!name||!uname||!pass){toast('Name, username and password required.','err');return;}
+function addUser(){
+  const name=document.getElementById('nu-name')?.value.trim();
+  const uname=document.getElementById('nu-user')?.value.trim();
+  const pass=document.getElementById('nu-pass')?.value;
+  const email=document.getElementById('nu-email')?.value.trim();
+  const role=document.getElementById('nu-role')?.value;
+  const deptId=document.getElementById('nu-dept')?.value;
+  const reg=document.getElementById('nu-reg')?.value.trim();
+  const classId=document.getElementById('nu-class')?.value;
+  if(!name||!uname||!pass){toast('Name, username, password required.','err');return;}
   if(DB.users.find(u=>u.username===uname)){toast('Username already taken.','err');return;}
-  const obj={id:uid(),username:uname,password:pass,role,name,email};
-  if(role==='student') obj.regNo=reg;
-  DB.users.push(obj); saveDB(); toast(`User "${name}" registered.`);
-  navTo('users');
+  const obj={id:uid(),username:uname,password:pass,role,name,email,deptId:deptId||null};
+  if(role==='student'){obj.regNo=reg;obj.classId=classId||null;}
+  DB.users.push(obj);saveDB();toast(`${name} registered.`);navTo('users');
 }
-function deleteUser(id) {
-  if(id===currentUser.id){toast("You cannot delete your own account.",'err');return;}
-  if(!confirm('Delete this user? This action cannot be undone.'))return;
+function delUser(id){
+  if(id===CU.id){toast("Cannot delete your own account.",'err');return;}
+  if(!confirm('Delete this user?'))return;
   DB.users=DB.users.filter(u=>u.id!==id);
   DB.enrollments=DB.enrollments.filter(e=>e.studentId!==id);
-  DB.sessions.forEach(s=>delete s.records[id]);
-  saveDB();toast('User removed.','info');
-  navTo('users');
+  DB.sessions.forEach(s=>{delete s.records[id];});
+  saveDB();toast('User deleted.','info');
+  if(CU.role==='dean') navTo('users');
+  else if(CU.role==='hod') navTo('students');
 }
-function addModule() {
-  const code=document.getElementById('mc-code').value.trim();
-  const name=document.getElementById('mc-name').value.trim();
-  const teacherId=document.getElementById('mc-teacher').value;
-  const desc=document.getElementById('mc-desc').value.trim();
-  if(!code||!name||!teacherId){toast('Code, name, and teacher are required.','err');return;}
+
+// ═══════════════════════════════════════
+//  HOD ACTIONS
+// ═══════════════════════════════════════
+function addClass(){
+  const name=document.getElementById('cl-name')?.value.trim();
+  const progId=document.getElementById('cl-prog')?.value;
+  const year=parseInt(document.getElementById('cl-year')?.value)||1;
+  const sem=document.getElementById('cl-sem')?.value.trim();
+  if(!name||!progId){toast('Name and programme required.','err');return;}
+  DB.classes.push({id:uid(),name,programId:progId,year,deptId:CU.deptId,semester:sem||'Semester 1'});
+  saveDB();toast(`Class "${name}" created.`);navTo('classes');
+}
+function deleteClass(id){
+  if(!confirm('Delete this class? Modules and students in this class will be affected.'))return;
+  DB.classes=DB.classes.filter(c=>c.id!==id);
+  saveDB();toast('Class deleted.','info');navTo('classes');
+}
+function addModule(){
+  const code=document.getElementById('mc-code')?.value.trim();
+  const name=document.getElementById('mc-name')?.value.trim();
+  const classId=document.getElementById('mc-class')?.value;
+  const teacherId=document.getElementById('mc-teacher')?.value;
+  const credits=parseInt(document.getElementById('mc-credits')?.value)||3;
+  if(!code||!name||!classId||!teacherId){toast('All fields required.','err');return;}
   if(DB.modules.find(m=>m.code===code)){toast('Module code already exists.','err');return;}
-  DB.modules.push({id:uid(),code,name,teacherId,description:desc});
-  saveDB();toast(`Module ${code} created.`);
-  navTo('modules');
+  DB.modules.push({id:uid(),code,name,classId,teacherId,deptId:CU.deptId,creditHours:credits});
+  saveDB();toast(`Module ${code} created.`);navTo('modules');
 }
-function deleteModule(id) {
-  if(!confirm('Delete this module and all associated sessions?'))return;
+function deleteModule(id){
+  if(!confirm('Delete module and all its sessions?'))return;
   DB.modules=DB.modules.filter(m=>m.id!==id);
   DB.sessions=DB.sessions.filter(s=>s.moduleId!==id);
   DB.enrollments=DB.enrollments.filter(e=>e.moduleId!==id);
-  saveDB();toast('Module deleted.','info');
-  navTo('modules');
+  saveDB();toast('Module deleted.','info');navTo('modules');
 }
-function showEnrollModal() {
-  const students=DB.users.filter(u=>u.role==='student');
-  const mods=DB.modules;
-  document.getElementById('modal-title').textContent='⚙ Manage Student Enrollments';
-  document.getElementById('modal-body').innerHTML=`
-    <div class="form-group" style="margin-bottom:14px;"><label>Select Student</label>
-      <select id="en-student">${students.map(s=>`<option value="${s.id}">${s.name} — ${s.regNo||s.username}</option>`).join('')}</select>
-    </div>
-    <div class="form-group" style="margin-bottom:14px;"><label>Select Module</label>
-      <select id="en-module">${mods.map(m=>`<option value="${m.id}">${m.code}: ${m.name}</option>`).join('')}</select>
-    </div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;">
-      <button class="btn btn-primary" onclick="enroll()">✅ Enroll Student</button>
-      <button class="btn btn-danger" onclick="unenroll()">❌ Unenroll Student</button>
-    </div>
-    <div id="en-msg" style="margin-top:12px;font-size:0.83rem;font-weight:600;min-height:18px;"></div>`;
-  document.getElementById('modal-actions').innerHTML=`<button class="btn btn-ghost" onclick="closeModal()">Done</button>`;
-  document.getElementById('modal-overlay').classList.add('open');
+function addStudentManual(){
+  const name=document.getElementById('ms-name')?.value.trim();
+  const reg=document.getElementById('ms-reg')?.value.trim();
+  const uname=document.getElementById('ms-user')?.value.trim();
+  const email=document.getElementById('ms-email')?.value.trim();
+  const pass=document.getElementById('ms-pass')?.value;
+  const classId=document.getElementById('ms-class')?.value;
+  if(!name||!uname||!pass){toast('Name, username, password required.','err');return;}
+  if(DB.users.find(u=>u.username===uname)){toast('Username taken.','err');return;}
+  DB.users.push({id:uid(),username:uname,password:pass,role:'student',name,email,deptId:CU.deptId,regNo:reg,classId:classId||null});
+  saveDB();toast(`Student ${name} added.`);navTo('students');
 }
-function enroll() {
-  const sid=document.getElementById('en-student').value;
-  const mid=document.getElementById('en-module').value;
+function addTeacher(){
+  const name=document.getElementById('tc-name')?.value.trim();
+  const uname=document.getElementById('tc-user')?.value.trim();
+  const email=document.getElementById('tc-email')?.value.trim();
+  const pass=document.getElementById('tc-pass')?.value;
+  if(!name||!uname||!pass){toast('Name, username, password required.','err');return;}
+  if(DB.users.find(u=>u.username===uname)){toast('Username taken.','err');return;}
+  DB.users.push({id:uid(),username:uname,password:pass,role:'teacher',name,email,deptId:CU.deptId});
+  saveDB();toast(`Lecturer ${name} added.`);navTo('teachers');
+}
+function hodEnroll(){
+  const sid=document.getElementById('en-stu')?.value;
+  const mid=document.getElementById('en-mod')?.value;
+  if(!sid||!mid){return;}
   if(DB.enrollments.find(e=>e.studentId===sid&&e.moduleId===mid)){
-    setEnMsg('Already enrolled in this module.','var(--warn)');return;
+    setEnMsg('Already enrolled.','var(--warn)');return;
   }
-  DB.enrollments.push({studentId:sid,moduleId:mid});saveDB();
-  const s=DB.users.find(u=>u.id===sid),m=DB.modules.find(x=>x.id===mid);
+  const m=getModule(mid);
+  DB.enrollments.push({id:uid(),studentId:sid,moduleId:mid,classId:m?.classId});
+  saveDB();
+  const s=getUser(sid);
   setEnMsg(`${s?.name} enrolled in ${m?.code}.`,'var(--green)');
+  navTo('students');
 }
-function unenroll() {
-  const sid=document.getElementById('en-student').value;
-  const mid=document.getElementById('en-module').value;
+function hodUnenroll(){
+  const sid=document.getElementById('en-stu')?.value;
+  const mid=document.getElementById('en-mod')?.value;
   const idx=DB.enrollments.findIndex(e=>e.studentId===sid&&e.moduleId===mid);
-  if(idx<0){setEnMsg('Student is not enrolled in this module.','var(--warn)');return;}
+  if(idx<0){setEnMsg('Not enrolled in this module.','var(--warn)');return;}
   DB.enrollments.splice(idx,1);saveDB();
-  const s=DB.users.find(u=>u.id===sid),m=DB.modules.find(x=>x.id===mid);
+  const s=getUser(sid),m=getModule(mid);
   setEnMsg(`${s?.name} unenrolled from ${m?.code}.`,'var(--danger)');
+  navTo('students');
 }
-function setEnMsg(msg,color) {
+function setEnMsg(msg,color){
   const el=document.getElementById('en-msg');
   if(el){el.textContent=msg;el.style.color=color;}
 }
-function viewSessionModal(sessionId) {
-  const s=DB.sessions.find(x=>x.id===sessionId);if(!s)return;
-  const m=DB.modules.find(x=>x.id===s.moduleId);
-  document.getElementById('modal-title').textContent=`Session — ${s.date}`;
-  const rows=Object.entries(s.records).map(([uid,val])=>{
-    const u=DB.users.find(x=>x.id===uid);
-    return `<tr><td><span class="badge badge-student">${u?.regNo||'—'}</span></td><td>${u?.name||uid}</td>
-      <td>${val==='P'?'<span class="badge badge-green">Present</span>':'<span class="badge badge-red">Absent</span>'}</td></tr>`;
-  }).join('');
-  document.getElementById('modal-body').innerHTML=`
-    <p style="color:var(--gray-mid);font-size:0.83rem;margin-bottom:3px;">Module: <strong style="color:var(--green-dark)">${m?.code} — ${m?.name}</strong></p>
-    <p style="color:var(--gray-mid);font-size:0.83rem;margin-bottom:16px;">Topic: <strong style="color:var(--charcoal)">${s.topic}</strong></p>
-    <div class="table-wrap"><table><thead><tr><th>Reg No</th><th>Student</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div>`;
-  document.getElementById('modal-actions').innerHTML=`<button class="btn btn-ghost" onclick="closeModal()">Close</button>`;
-  document.getElementById('modal-overlay').classList.add('open');
-}
-function deleteSession(sessionId, moduleId) {
-  if(!confirm('Delete this session?'))return;
-  DB.sessions=DB.sessions.filter(s=>s.id!==sessionId);
-  saveDB();toast('Session deleted.','info');
-  navTo('my-modules');
-}
-function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
 
-// ═══════════════════════════════════════════════
-//  TABS
-// ═══════════════════════════════════════════════
-function switchTab(group,activeId,btn) {
-  document.querySelectorAll(`[id^="${group}-"]`).forEach(p=>p.classList.remove('active'));
+// ═══════════════════════════════════════
+//  EXCEL UPLOAD
+// ═══════════════════════════════════════
+let xlsRows=[];
+function handleXlsUpload(event){
+  const file=event.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const wb=XLSX.read(e.target.result,{type:'binary'});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      const data=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+      if(data.length<2){toast('Excel file is empty or has no data rows.','err');return;}
+      // Detect header row
+      const headers=data[0].map(h=>String(h).toLowerCase().trim());
+      const colIdx={
+        regno: headers.findIndex(h=>h.includes('reg')||h.includes('no')||h.includes('number')),
+        name:  headers.findIndex(h=>h.includes('name')),
+        email: headers.findIndex(h=>h.includes('email')||h.includes('mail')),
+        user:  headers.findIndex(h=>h.includes('user')||h.includes('login')),
+        pass:  headers.findIndex(h=>h.includes('pass')||h.includes('pwd')),
+        cls:   headers.findIndex(h=>h.includes('class')||h.includes('group')),
+      };
+      xlsRows=[];
+      const errors=[];
+      data.slice(1).forEach((row,i)=>{
+        if(!row.some(c=>String(c).trim()))return;// skip empty rows
+        const name=colIdx.name>=0?String(row[colIdx.name]||'').trim():'';
+        const regno=colIdx.regno>=0?String(row[colIdx.regno]||'').trim():'';
+        const email=colIdx.email>=0?String(row[colIdx.email]||'').trim():'';
+        const user=colIdx.user>=0?String(row[colIdx.user]||'').trim():regno.replace(/[^a-z0-9]/gi,'').toLowerCase()||`student_${uid()}`;
+        const pass=colIdx.pass>=0?String(row[colIdx.pass]||'').trim():'kiut2024';
+        const clsName=colIdx.cls>=0?String(row[colIdx.cls]||'').trim():'';
+        if(!name){errors.push(`Row ${i+2}: Name missing`);return;}
+        xlsRows.push({name,regno,email,user,pass,clsName,_rownum:i+2,_valid:true});
+      });
+      renderXlsPreview(xlsRows,errors);
+    }catch(err){toast('Error reading Excel file: '+err.message,'err');}
+  };
+  reader.readAsBinaryString(file);
+}
+function renderXlsPreview(rows,errors){
+  const preview=document.getElementById('xls-preview');
+  const acts=document.getElementById('upload-actions');
+  if(!preview)return;
+  let html=`<div class="xls-preview">
+    <div class="xls-header">📊 Preview — <span class="xls-count">${rows.length} students</span> found
+      ${errors.length?`<span style="margin-left:8px;color:#fca5a5">⚠ ${errors.length} row(s) skipped</span>`:''}
+    </div>
+    <div class="tw"><table>
+      <thead><tr><th>#</th><th>Name</th><th>Reg No</th><th>Email</th><th>Username</th><th>Class (from file)</th></tr></thead>
+      <tbody>${rows.slice(0,20).map((r,i)=>`<tr>
+        <td style="color:var(--gray-md);font-size:0.74rem">${r._rownum}</td>
+        <td><strong>${r.name}</strong></td>
+        <td><span class="badge b-green">${r.regno||'—'}</span></td>
+        <td>${r.email||'—'}</td>
+        <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.73rem">${r.user}</span></td>
+        <td>${r.clsName||'<span style="color:var(--gray-md)">—</span>'}</td>
+      </tr>`).join('')}
+      ${rows.length>20?`<tr><td colspan="6" style="text-align:center;color:var(--gray-md);font-style:italic;padding:10px;">... and ${rows.length-20} more</td></tr>`:''}
+      </tbody>
+    </table></div>
+  </div>`;
+  if(errors.length){
+    html+=`<div class="alert alert-warn" style="margin-top:10px;">⚠ Skipped rows: ${errors.join('; ')}</div>`;
+  }
+  preview.innerHTML=html;
+  if(acts) acts.style.display=rows.length>0?'flex':'none';
+}
+function commitXlsUpload(){
+  if(!xlsRows.length){toast('No data to import.','err');return;}
+  const overrideClass=document.getElementById('upload-class')?.value;
+  let added=0,skipped=0;
+  xlsRows.forEach(r=>{
+    if(DB.users.find(u=>u.username===r.user)){skipped++;return;}
+    // Resolve class
+    let classId=overrideClass||null;
+    if(!classId&&r.clsName){
+      const found=myDeptClasses().find(c=>c.name.toLowerCase().includes(r.clsName.toLowerCase())||r.clsName.toLowerCase().includes(c.name.toLowerCase()));
+      if(found)classId=found.id;
+    }
+    DB.users.push({
+      id:uid(),username:r.user,password:r.pass,role:'student',
+      name:r.name,email:r.email,deptId:CU.deptId,
+      regNo:r.regno,classId
+    });
+    added++;
+  });
+  saveDB();
+  toast(`✅ ${added} student(s) registered${skipped?`, ${skipped} skipped (duplicate username)`:''}.`);
+  xlsRows=[];
+  clearXlsUpload();
+  navTo('students');
+}
+function clearXlsUpload(){
+  xlsRows=[];
+  const prev=document.getElementById('xls-preview');if(prev)prev.innerHTML='';
+  const acts=document.getElementById('upload-actions');if(acts)acts.style.display='none';
+  const inp=document.getElementById('xls-input');if(inp)inp.value='';
+}
+function downloadTemplate(){
+  const ws=XLSX.utils.aoa_to_sheet([
+    ['RegNo','Name','Email','Username','Password','Class'],
+    ['KIUT/CS/2024/001','Alice Mwangi','amwangi@kiut.ac.tz','amwangi','kiut2024','DCS Year 1'],
+    ['KIUT/CS/2024/002','Bob Kariuki','bkariuki@kiut.ac.tz','bkariuki','kiut2024','DCS Year 1'],
+  ]);
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Students');
+  XLSX.writeFile(wb,'KIUT_Student_Upload_Template.xlsx');
+  toast('Template downloaded.','info');
+}
+
+// ═══════════════════════════════════════
+//  MODAL & TABS & UTILS
+// ═══════════════════════════════════════
+function closeMo(){document.getElementById('modal').classList.remove('open');}
+function switchTab(grp,activeId,btn){
+  document.querySelectorAll(`[id^="${grp}-"]`).forEach(p=>p.classList.remove('active'));
   document.getElementById(activeId)?.classList.add('active');
   btn.closest('.tab-row').querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
 }
-function openModule(moduleId) {
+function openModule(moduleId){
   navTo('my-modules');
   setTimeout(()=>{
-    const btn=document.querySelector(`.tab-btn[onclick*="mmod-${moduleId}"]`);
-    if(btn) btn.click();
+    const btn=document.querySelector(`.tab-btn[onclick*="tm-${moduleId}"]`);
+    if(btn)btn.click();
   },60);
 }
-
-// ═══════════════════════════════════════════════
-//  CSV EXPORT
-// ═══════════════════════════════════════════════
-function exportCSV(moduleId) {
-  const m=DB.modules.find(x=>x.id===moduleId);
-  const enrolled=DB.enrollments.filter(e=>e.moduleId===moduleId).map(e=>DB.users.find(u=>u.id===e.studentId)).filter(Boolean);
-  const teacher=DB.users.find(u=>u.id===m?.teacherId);
+function exportCSV(moduleId){
+  const m=getModule(moduleId);if(!m)return;
+  const enrolled=DB.enrollments.filter(e=>e.moduleId===moduleId).map(e=>getUser(e.studentId)).filter(Boolean);
+  const teacher=getUser(m.teacherId),cl=getClass(m.classId),dept=getDept(m.deptId);
   let csv=`KIUT — Kampala International University Tanzania\n`;
-  csv+=`Module: ${m?.code} — ${m?.name}\nLecturer: ${teacher?.name||'—'}\n\n`;
-  csv+='Reg No,Name,Total Sessions,Present,Absent,Percentage,Exam Status\n';
+  csv+=`Department: ${dept?.name||'—'}\nModule: ${m.code} — ${m.name}\nClass: ${cl?.name||'—'}\nLecturer: ${teacher?.name||'—'}\n\n`;
+  csv+='Reg No,Student Name,Total Sessions,Present,Absent,Percentage,Exam Status\n';
   enrolled.forEach(s=>{
-    const st=moduleStats(s.id,moduleId);const p=pct(st.present,st.total);
+    const st=modStats(s.id,moduleId),p=pct(st.present,st.total);
     csv+=`${s.regNo||''},${s.name},${st.total},${st.present},${st.absent},${p}%,${p>=75?'Eligible':'Not Eligible'}\n`;
   });
   const blob=new Blob([csv],{type:'text/csv'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
-  a.download=`KIUT_${m?.code}_Report_${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
-  toast('Report exported.','info');
+  a.download=`KIUT_${m.code}_Attendance_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();toast('Report exported.','info');
 }
 
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════
 //  INIT
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════
 loadDB();
-</script>
-</body>
-</html>
+</script></body></html>
