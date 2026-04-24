@@ -341,6 +341,40 @@ tbody tr:hover td{background:var(--green-pale);}
 
 @media(max-width:900px){.g2,.g3,.g13{grid-template-columns:1fr;}.fg-3,.fg-4{grid-template-columns:1fr 1fr;}}
 @media(max-width:600px){.fg-2,.fg-3,.fg-4{grid-template-columns:1fr;}.stats-row{grid-template-columns:1fr 1fr;}.content{padding:16px 12px;}.topbar{padding:0 12px;}.tb-nav{display:none;}.tb-user{display:none;}}
+
+/* ══ PASSWORD RESET OVERLAY ══ */
+#pw-reset-overlay{
+  display:none;position:fixed;inset:0;z-index:9000;
+  background:rgba(7,43,22,0.82);align-items:center;justify-content:center;
+}
+#pw-reset-overlay.open{display:flex;}
+.pwr-box{
+  background:var(--white);border-radius:14px;padding:38px 40px;
+  width:440px;max-width:95vw;box-shadow:var(--shadow-lg);
+  animation:fadeUp 0.3s ease;border-top:5px solid var(--green-mid);
+}
+.pwr-title{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:700;
+  color:var(--green-dark);margin-bottom:6px;}
+.pwr-sub{font-size:0.8rem;color:var(--gray-md);margin-bottom:24px;line-height:1.6;}
+.pwr-group{margin-bottom:14px;}
+.pwr-group label{display:block;font-size:0.67rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:0.09em;color:var(--gray);margin-bottom:5px;}
+.pwr-group input{
+  width:100%;background:var(--bg);border:1.5px solid var(--gray-lt);border-radius:7px;
+  color:var(--charcoal);padding:10px 13px;font-family:'Outfit',sans-serif;font-size:0.88rem;
+  outline:none;transition:border-color 0.14s,box-shadow 0.14s;
+}
+.pwr-group input:focus{border-color:var(--green-mid);box-shadow:0 0 0 3px rgba(26,122,56,0.1);}
+.pwr-err{color:var(--danger);font-size:0.77rem;font-weight:600;min-height:16px;margin-bottom:10px;}
+.pwr-btn{
+  width:100%;padding:12px;background:var(--green);border:none;border-radius:7px;
+  color:#fff;font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;
+  cursor:pointer;letter-spacing:0.02em;transition:all 0.14s;position:relative;overflow:hidden;
+}
+.pwr-btn:hover{background:var(--green-mid);}
+.pwr-btn::after{content:'';position:absolute;top:0;right:0;bottom:0;width:4px;background:var(--yellow);}
+.pwr-skip{display:block;text-align:center;margin-top:14px;font-size:0.77rem;
+  color:var(--gray-md);cursor:pointer;background:none;border:none;text-decoration:underline;}
 </style>
 </head>
 <body>
@@ -358,17 +392,36 @@ tbody tr:hover td{background:var(--green-pale);}
     <div class="lf-wrap">
       <div class="lf-title">Sign In</div>
       <div class="lf-sub">Enter your KIUT institutional credentials</div>
-      <div class="lf-group"><label>Username</label><input type="text" id="l-user" placeholder="username" autocomplete="off"/></div>
-      <div class="lf-group"><label>Password</label><input type="password" id="l-pass" placeholder="password"/></div>
+      <div class="lf-group">
+        <label>I am a</label>
+        <select id="l-role" onchange="onLoginRoleChange()">
+          <option value="staff">Staff (Dean / HOD / Lecturer)</option>
+          <option value="student">Student</option>
+        </select>
+      </div>
+      <div class="lf-group" id="lg-username-wrap">
+        <label>Username</label>
+        <input type="text" id="l-user" placeholder="e.g. hod_cs" autocomplete="off"/>
+      </div>
+      <div class="lf-group" id="lg-regno-wrap" style="display:none">
+        <label>Registration Number</label>
+        <input type="text" id="l-regno" placeholder="e.g. CIT/35477/2501/DT" autocomplete="off"/>
+      </div>
+      <div class="lf-group">
+        <label>Password</label>
+        <input type="password" id="l-pass" placeholder="Default password: 1234"/>
+      </div>
       <button class="lf-submit" onclick="doLogin()">Sign In →</button>
       <div class="lf-err" id="login-err"></div>
       <div class="lf-hint">
-        <div class="lf-hint-title">Demo Accounts</div>
-        <div class="lf-hint-row"><strong>dean</strong> / dean123 — Dean of Students</div>
-        <div class="lf-hint-row"><strong>hod_cs</strong> / hod123 — HOD, Faculty of Computing</div>
-        <div class="lf-hint-row"><strong>hod_bus</strong> / hod123 — HOD, Faculty of Business</div>
-        <div class="lf-hint-row"><strong>teacher1</strong> / pass123 — Lecturer</div>
-        <div class="lf-hint-row"><strong>student1</strong> / pass123 — Student</div>
+        <div class="lf-hint-title">Demo Accounts (all use password: 1234)</div>
+        <div class="lf-hint-row"><strong>dean</strong> — Dean of Students</div>
+        <div class="lf-hint-row"><strong>hod_cs</strong> — HOD, Faculty of Computing</div>
+        <div class="lf-hint-row"><strong>teacher1</strong> — Lecturer</div>
+        <div class="lf-hint-row" style="margin-top:6px;padding-top:6px;border-top:1px solid var(--green-pale2);">
+          Students → select <em>Student</em> above, enter Reg No
+        </div>
+        <div class="lf-hint-row"><strong>CIT/35477/2501/DT</strong> — demo student</div>
       </div>
     </div>
   </div>
@@ -385,7 +438,7 @@ tbody tr:hover td{background:var(--green-pale);}
     <div class="tb-right">
       <span class="tb-user" id="tb-user"></span>
       <span class="role-chip" id="tb-role"></span>
-      <button class="tb-logout" onclick="doLogout()">Sign Out</button>
+      <button class="tb-logout" onclick="openChangePassword(false)" style="margin-right:6px;">🔑 Change Password</button><button class="tb-logout" onclick="doLogout()">Sign Out</button>
     </div>
   </div>
   <div class="content" id="main-content"></div>
@@ -408,27 +461,27 @@ tbody tr:hover td{background:var(--green-pale);}
 // ═══════════════════════════════════════
 //  DATA STORE
 // ═══════════════════════════════════════
-const STORE = 'kiut_v4';
+const STORE = 'kiut_v5';
 let DB = {
   users: [
-    {id:'u0',username:'dean',   password:'dean123', role:'dean',    name:'Prof. John Mwamba',      email:'dean@kiut.ac.tz'},
-    {id:'u1',username:'hod_cs', password:'hod123',  role:'hod',     name:'Dr. Grace Oduya',        email:'goduya@kiut.ac.tz',   deptId:'d1'},
-    {id:'u2',username:'hod_bus',password:'hod123',  role:'hod',     name:'Dr. Peter Salehe',       email:'psalehe@kiut.ac.tz',  deptId:'d2'},
-    {id:'u3',username:'teacher1',password:'pass123', role:'teacher', name:'Dr. Sarah Kimani',       email:'skimani@kiut.ac.tz',  deptId:'d1'},
-    {id:'u4',username:'teacher2',password:'pass123', role:'teacher', name:'Mr. James Oloo',         email:'joloo@kiut.ac.tz',    deptId:'d1'},
-    {id:'u5',username:'teacher3',password:'pass123', role:'teacher', name:'Ms. Fatuma Rashid',      email:'frashid@kiut.ac.tz',  deptId:'d2'},
-    {id:'u6',username:'student1',password:'pass123', role:'student', name:'Alice Mwangi',           email:'amwangi@kiut.ac.tz',  deptId:'d1', regNo:'KIUT/CS/2024/001', classId:'c1'},
-    {id:'u7',username:'student2',password:'pass123', role:'student', name:'Bob Kariuki',            email:'bkariuki@kiut.ac.tz', deptId:'d1', regNo:'KIUT/CS/2024/002', classId:'c1'},
-    {id:'u8',username:'student3',password:'pass123', role:'student', name:'Clara Njoroge',          email:'cnjoroge@kiut.ac.tz', deptId:'d1', regNo:'KIUT/CS/2024/003', classId:'c2'},
-    {id:'u9',username:'student4',password:'pass123', role:'student', name:'David Kamau',            email:'dkamau@kiut.ac.tz',   deptId:'d2', regNo:'KIUT/BUS/2024/001',classId:'c3'},
+    {id:'u0',username:'dean',    password:'1234',mustReset:true,role:'dean',   name:'Dr. Kiliza',             email:'dean@kiut.ac.tz'},
+    {id:'u1',username:'hod_cs',  password:'1234',mustReset:true,role:'hod',    name:'Mr Godfrey Ochwoto',     email:'goduya@kiut.ac.tz',  deptId:'d1'},
+    {id:'u2',username:'hod_bus', password:'1234',mustReset:true,role:'hod',    name:'Dr. Janneth Psalehe',    email:'psalehe@kiut.ac.tz', deptId:'d2'},
+    {id:'u3',username:'teacher1',password:'1234',mustReset:true,role:'teacher',name:'Dr. Igangaz',            email:'skimani@kiut.ac.tz', deptId:'d1'},
+    {id:'u4',username:'teacher2',password:'1234',mustReset:true,role:'teacher',name:'Mr. Nelson',             email:'joloo@kiut.ac.tz',   deptId:'d1'},
+    {id:'u5',username:'teacher3',password:'1234',mustReset:true,role:'teacher',name:'Ms. Winnie Gecha',       email:'frashid@kiut.ac.tz', deptId:'d2'},
+    {id:'u6',username:'cit35477',password:'1234',mustReset:true,role:'student',name:'MKALA, Kelvin Mayala',   email:'',deptId:'d1',regNo:'CIT/35477/2501/DT',classId:'c1'},
+    {id:'u7',username:'cit35484',password:'1234',mustReset:true,role:'student',name:'WAYA, Witness Michael',  email:'',deptId:'d1',regNo:'CIT/35484/2501/DT',classId:'c1'},
+    {id:'u8',username:'cit35497',password:'1234',mustReset:true,role:'student',name:'SWALLEHE, Mariamu Ashirafu',email:'',deptId:'d1',regNo:'CIT/35497/2501/DT',classId:'c2'},
+    {id:'u9',username:'cit35511',password:'1234',mustReset:true,role:'student',name:'ULEDI, Mwanahawa K',     email:'',deptId:'d2',regNo:'CIT/35511/2501/DT',classId:'c3'},
   ],
   departments: [
-    {id:'d1', name:'Faculty of Computing & Information Technology', code:'FCIT', hodId:'u1'},
-    {id:'d2', name:'Faculty of Business Administration',            code:'FBA',  hodId:'u2'},
+    {id:'d1', name:'Department of Computing & Information Technology', code:'FCIT', hodId:'u1'},
+    {id:'d2', name:'Department of Business Administration',            code:'FBA',  hodId:'u2'},
   ],
   programs: [
     {id:'p1', name:'Diploma of Computer Science',         code:'DCS',  deptId:'d1', duration:2},
-    {id:'p2', name:'Bachelor of Science in IT',           code:'BSIT', deptId:'d1', duration:3},
+    {id:'p2', name:'Bachelor of Science in IT',           code:'BIT', deptId:'d1', duration:3},
     {id:'p3', name:'Diploma of Business Administration',  code:'DBA',  deptId:'d2', duration:2},
     {id:'p4', name:'Bachelor of Business Administration', code:'BBA',  deptId:'d2', duration:3},
   ],
@@ -502,24 +555,78 @@ function myDeptPrograms(){return DB.programs.filter(p=>p.deptId===CU.deptId);}
 // ═══════════════════════════════════════
 //  AUTH
 // ═══════════════════════════════════════
+function onLoginRoleChange(){
+  const isStudent=document.getElementById('l-role').value==='student';
+  document.getElementById('lg-username-wrap').style.display=isStudent?'none':'';
+  document.getElementById('lg-regno-wrap').style.display=isStudent?'':'none';
+}
 function doLogin(){
-  const u=document.getElementById('l-user').value.trim();
-  const p=document.getElementById('l-pass').value;
-  const user=DB.users.find(x=>x.username===u&&x.password===p);
-  if(!user){document.getElementById('login-err').textContent='Invalid username or password.';return;}
+  const role=document.getElementById('l-role').value;
+  const pass=document.getElementById('l-pass').value;
+  let user;
+  if(role==='student'){
+    const rn=document.getElementById('l-regno').value.trim();
+    if(!rn){document.getElementById('login-err').textContent='Please enter your Registration Number.';return;}
+    user=DB.users.find(x=>x.role==='student'&&x.regNo&&x.regNo.trim().toLowerCase()===rn.toLowerCase()&&x.password===pass);
+    if(!user){document.getElementById('login-err').textContent='Invalid Registration Number or password.';return;}
+  } else {
+    const uname=document.getElementById('l-user').value.trim();
+    if(!uname){document.getElementById('login-err').textContent='Please enter your username.';return;}
+    user=DB.users.find(x=>x.role!=='student'&&x.username===uname&&x.password===pass);
+    if(!user){document.getElementById('login-err').textContent='Invalid username or password.';return;}
+  }
   CU=user;
   document.getElementById('login-err').textContent='';
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app-shell').style.display='block';
   bootApp();
+  // Prompt mandatory reset if still on default password
+  if(CU.mustReset) openChangePassword(true);
 }
 document.getElementById('l-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 function doLogout(){
   CU=null;tempAtt={};
+  document.getElementById('pw-reset-overlay').classList.remove('open');
   document.getElementById('app-shell').style.display='none';
   document.getElementById('login-screen').style.display='flex';
   document.getElementById('l-user').value='';
+  document.getElementById('l-regno').value='';
   document.getElementById('l-pass').value='';
+}
+
+// ── Password Reset ──────────────────────────────────────────────────────────
+let _resetMandatory=false;
+function openChangePassword(mandatory){
+  _resetMandatory=!!mandatory;
+  document.getElementById('pwr-title').textContent=mandatory?'Create Your Password':'Change Password';
+  document.getElementById('pwr-sub').textContent=mandatory
+    ?'Your default password is 1234. You must choose a new password before you can use the system.'
+    :'Enter and confirm your new password below.';
+  document.getElementById('pwr-skip').style.display=mandatory?'none':'block';
+  document.getElementById('pwr-new').value='';
+  document.getElementById('pwr-confirm').value='';
+  document.getElementById('pwr-err').textContent='';
+  document.getElementById('pw-reset-overlay').classList.add('open');
+  document.getElementById('pwr-new').focus();
+}
+function closeChangePassword(){
+  document.getElementById('pw-reset-overlay').classList.remove('open');
+}
+function submitPasswordReset(){
+  const np=document.getElementById('pwr-new').value;
+  const cp=document.getElementById('pwr-confirm').value;
+  const errEl=document.getElementById('pwr-err');
+  if(np.length<6){errEl.textContent='Password must be at least 6 characters.';return;}
+  if(np==='1234'){errEl.textContent='You cannot keep the default password.';return;}
+  if(np!==cp){errEl.textContent='Passwords do not match.';return;}
+  const idx=DB.users.findIndex(u=>u.id===CU.id);
+  if(idx<0){errEl.textContent='User not found.';return;}
+  DB.users[idx].password=np;
+  DB.users[idx].mustReset=false;
+  CU=DB.users[idx];
+  saveDB();
+  closeChangePassword();
+  toast('✅ Password changed successfully.');
 }
 
 function bootApp(){
@@ -718,7 +825,7 @@ function deanUsers(){
         <thead><tr><th>Name</th><th>Username</th><th>Email</th><th>Department</th><th></th></tr></thead>
         <tbody>${DB.users.filter(u=>u.role==='hod').map(u=>{
           const d=getDept(u.deptId);
-          return `<tr><td><strong>${u.name}</strong></td>
+          return `<tr><td><strong>${u.name}</strong> ${u.mustReset?'<span class="badge b-warn" style="font-size:0.6rem;margin-left:4px">⚠ Reset</span>':''}</td>
             <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">${u.username}</span></td>
             <td>${u.email||'—'}</td>
             <td>${d?`<span class="badge b-info">${d.code}</span>`:'-'}</td>
@@ -1030,8 +1137,8 @@ function hodStudents(){
     <div class="card">
       <div class="ch"><div class="ct"><div class="ci ci-y">📤</div>Bulk Register Students via Excel</div></div>
       <div class="alert alert-info">
-        ℹ Upload an Excel file (.xlsx/.xls) with columns: <strong>RegNo, Name, Email, Username, Password, Class</strong>.
-        The "Class" column should match a class name (e.g. "DCS Year 1"). All students will be registered under <strong>${dept?.name}</strong>.
+        ℹ Upload the KIUT OSIM class-list Excel file (.xlsx/.xls). Required columns: <strong>S/N, REG NO, FULL NAME, SEX, STREAM, STATUS, DATE REGISTERED, CLASS STATUS</strong>.
+        Students are imported with default password <strong>1234</strong> and must reset it on first login. All students will be registered under <strong>${dept?.name}</strong>.
       </div>
       <div style="margin-bottom:14px;">
         <button class="btn btn-ghost btn-sm" onclick="downloadTemplate()">⬇ Download Template</button>
@@ -1329,7 +1436,7 @@ function studentPortal(){
         ${cl?cl.name:'—'} &nbsp;·&nbsp; ${dept?.code||'—'}
       </div>
     </div>
-    <div class="ph-badge">Student Portal</div>
+    <button class="btn btn-ghost btn-sm" onclick="openChangePassword(false)" style="align-self:flex-start;margin-top:4px;">🔑 Reset Account</button>
   </div>
   ${!mods.length?`<div class="card"><div class="alert alert-warn">⚠ You are not enrolled in any modules yet. Contact your HOD or department office.</div></div>`
   :mods.map(m=>{
@@ -1492,11 +1599,12 @@ function addUser(){
   const deptId=document.getElementById('nu-dept')?.value;
   const reg=document.getElementById('nu-reg')?.value.trim();
   const classId=document.getElementById('nu-class')?.value;
-  if(!name||!uname||!pass){toast('Name, username, password required.','err');return;}
+  if(!name||!uname){toast('Name and username required.','err');return;}
   if(DB.users.find(u=>u.username===uname)){toast('Username already taken.','err');return;}
-  const obj={id:uid(),username:uname,password:pass,role,name,email,deptId:deptId||null};
+  const finalPass=pass||'1234';
+  const obj={id:uid(),username:uname,password:finalPass,mustReset:true,role,name,email,deptId:deptId||null};
   if(role==='student'){obj.regNo=reg;obj.classId=classId||null;}
-  DB.users.push(obj);saveDB();toast(`${name} registered.`);navTo('users');
+  DB.users.push(obj);saveDB();toast(`${name} registered — default password: 1234`);navTo('users');
 }
 function delUser(id){
   if(id===CU.id){toast("Cannot delete your own account.",'err');return;}
@@ -1551,20 +1659,20 @@ function addStudentManual(){
   const email=document.getElementById('ms-email')?.value.trim();
   const pass=document.getElementById('ms-pass')?.value;
   const classId=document.getElementById('ms-class')?.value;
-  if(!name||!uname||!pass){toast('Name, username, password required.','err');return;}
+  if(!name||!uname){toast('Name and username required.','err');return;}
   if(DB.users.find(u=>u.username===uname)){toast('Username taken.','err');return;}
-  DB.users.push({id:uid(),username:uname,password:pass,role:'student',name,email,deptId:CU.deptId,regNo:reg,classId:classId||null});
-  saveDB();toast(`Student ${name} added.`);navTo('students');
+  DB.users.push({id:uid(),username:uname,password:'1234',mustReset:true,role:'student',name,email,deptId:CU.deptId,regNo:reg,classId:classId||null});
+  saveDB();toast(`Student ${name} added — default password: 1234`);navTo('students');
 }
 function addTeacher(){
   const name=document.getElementById('tc-name')?.value.trim();
   const uname=document.getElementById('tc-user')?.value.trim();
   const email=document.getElementById('tc-email')?.value.trim();
   const pass=document.getElementById('tc-pass')?.value;
-  if(!name||!uname||!pass){toast('Name, username, password required.','err');return;}
+  if(!name||!uname){toast('Name and username required.','err');return;}
   if(DB.users.find(u=>u.username===uname)){toast('Username taken.','err');return;}
-  DB.users.push({id:uid(),username:uname,password:pass,role:'teacher',name,email,deptId:CU.deptId});
-  saveDB();toast(`Lecturer ${name} added.`);navTo('teachers');
+  DB.users.push({id:uid(),username:uname,password:'1234',mustReset:true,role:'teacher',name,email,deptId:CU.deptId});
+  saveDB();toast(`Lecturer ${name} added — default password: 1234`);navTo('teachers');
 }
 function hodEnroll(){
   const sid=document.getElementById('en-stu')?.value;
@@ -1596,9 +1704,18 @@ function setEnMsg(msg,color){
 }
 
 // ═══════════════════════════════════════
-//  EXCEL UPLOAD
+//  EXCEL UPLOAD  (KIUT OSIM format)
+//  Columns: S/N | REG NO | FULL NAME | SEX | STREAM | STATUS | DATE REGISTERED | CLASS STATUS
 // ═══════════════════════════════════════
 let xlsRows=[];
+function findHeaderRow(data){
+  // KIUT OSIM files have 3-4 meta rows before the actual header
+  for(let i=0;i<Math.min(10,data.length);i++){
+    const row=data[i].map(c=>String(c).toLowerCase().trim());
+    if(row.some(c=>c==='reg no'||c==='regno'||c==='full name'||c==='fullname'))return i;
+  }
+  return 0; // fallback
+}
 function handleXlsUpload(event){
   const file=event.target.files[0];if(!file)return;
   const reader=new FileReader();
@@ -1608,31 +1725,46 @@ function handleXlsUpload(event){
       const ws=wb.Sheets[wb.SheetNames[0]];
       const data=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
       if(data.length<2){toast('Excel file is empty or has no data rows.','err');return;}
-      // Detect header row
-      const headers=data[0].map(h=>String(h).toLowerCase().trim());
-      const colIdx={
-        regno: headers.findIndex(h=>h.includes('reg')||h.includes('no')||h.includes('number')),
-        name:  headers.findIndex(h=>h.includes('name')),
-        email: headers.findIndex(h=>h.includes('email')||h.includes('mail')),
-        user:  headers.findIndex(h=>h.includes('user')||h.includes('login')),
-        pass:  headers.findIndex(h=>h.includes('pass')||h.includes('pwd')),
-        cls:   headers.findIndex(h=>h.includes('class')||h.includes('group')),
+      const hdrRow=findHeaderRow(data);
+      const headers=data[hdrRow].map(h=>String(h).toLowerCase().trim());
+      // Map KIUT OSIM columns
+      const ci={
+        sn:      headers.findIndex(h=>h==='s/n'||h==='sn'||h==='#'),
+        regno:   headers.findIndex(h=>h==='reg no'||h==='regno'||h==='reg.no'||h.includes('reg no')),
+        name:    headers.findIndex(h=>h==='full name'||h==='fullname'||h==='name'),
+        sex:     headers.findIndex(h=>h==='sex'||h==='gender'),
+        stream:  headers.findIndex(h=>h==='stream'),
+        status:  headers.findIndex(h=>h==='status'),
+        dateReg: headers.findIndex(h=>h.includes('date')),
+        clsStat: headers.findIndex(h=>h.includes('class status')||h.includes('class')),
       };
+      // Fallback: broader match if strict match fails
+      if(ci.regno<0) ci.regno=headers.findIndex(h=>h.includes('reg'));
+      if(ci.name<0)  ci.name=headers.findIndex(h=>h.includes('name'));
+      if(ci.regno<0||ci.name<0){
+        toast('Could not detect REG NO or FULL NAME columns. Please use the KIUT OSIM template.','err');return;
+      }
       xlsRows=[];
       const errors=[];
-      data.slice(1).forEach((row,i)=>{
-        if(!row.some(c=>String(c).trim()))return;// skip empty rows
-        const name=colIdx.name>=0?String(row[colIdx.name]||'').trim():'';
-        const regno=colIdx.regno>=0?String(row[colIdx.regno]||'').trim():'';
-        const email=colIdx.email>=0?String(row[colIdx.email]||'').trim():'';
-        const user=colIdx.user>=0?String(row[colIdx.user]||'').trim():regno.replace(/[^a-z0-9]/gi,'').toLowerCase()||`student_${uid()}`;
-        const pass=colIdx.pass>=0?String(row[colIdx.pass]||'').trim():'kiut2024';
-        const clsName=colIdx.cls>=0?String(row[colIdx.cls]||'').trim():'';
-        if(!name){errors.push(`Row ${i+2}: Name missing`);return;}
-        xlsRows.push({name,regno,email,user,pass,clsName,_rownum:i+2,_valid:true});
+      data.slice(hdrRow+1).forEach((row,i)=>{
+        if(!row.some(c=>String(c).trim()))return; // blank row
+        const rowNum=hdrRow+2+i;
+        const name=String(row[ci.name]||'').trim();
+        const regno=String(row[ci.regno]||'').trim();
+        const sex=ci.sex>=0?String(row[ci.sex]||'').trim():'';
+        const stream=ci.stream>=0?String(row[ci.stream]||'').trim():'';
+        const status=ci.status>=0?String(row[ci.status]||'').trim():'';
+        const dateReg=ci.dateReg>=0?String(row[ci.dateReg]||'').trim():'';
+        const clsStat=ci.clsStat>=0?String(row[ci.clsStat]||'').trim():'';
+        if(!name||!regno){errors.push(`Row ${rowNum}: missing name or reg no`);return;}
+        // Skip summary rows (e.g. "SUMMARY INFORMATION")
+        if(name.toUpperCase().includes('SUMMARY')||isNaN(row[ci.sn>=0?ci.sn:0])&&!regno.includes('/'))return;
+        // Auto-generate username from regNo digits
+        const username=regno.replace(/[^a-z0-9]/gi,'').toLowerCase()||`stu${uid()}`;
+        xlsRows.push({name,regno,sex,stream,status,dateReg,clsStat,username,_rownum:rowNum});
       });
       renderXlsPreview(xlsRows,errors);
-    }catch(err){toast('Error reading Excel file: '+err.message,'err');}
+    }catch(err){toast('Error reading Excel: '+err.message,'err');}
   };
   reader.readAsBinaryString(file);
 }
@@ -1641,26 +1773,27 @@ function renderXlsPreview(rows,errors){
   const acts=document.getElementById('upload-actions');
   if(!preview)return;
   let html=`<div class="xls-preview">
-    <div class="xls-header">📊 Preview — <span class="xls-count">${rows.length} students</span> found
+    <div class="xls-header">📊 Preview — <span class="xls-count">${rows.length} students</span> detected
       ${errors.length?`<span style="margin-left:8px;color:#fca5a5">⚠ ${errors.length} row(s) skipped</span>`:''}
     </div>
     <div class="tw"><table>
-      <thead><tr><th>#</th><th>Name</th><th>Reg No</th><th>Email</th><th>Username</th><th>Class (from file)</th></tr></thead>
-      <tbody>${rows.slice(0,20).map((r,i)=>`<tr>
-        <td style="color:var(--gray-md);font-size:0.74rem">${r._rownum}</td>
+      <thead><tr><th>#</th><th>Reg No</th><th>Full Name</th><th>Sex</th><th>Stream</th><th>Class Status</th></tr></thead>
+      <tbody>${rows.slice(0,25).map(r=>`<tr>
+        <td style="color:var(--gray-md);font-size:0.73rem">${r._rownum}</td>
+        <td><span class="badge b-green" style="font-size:0.66rem">${r.regno}</span></td>
         <td><strong>${r.name}</strong></td>
-        <td><span class="badge b-green">${r.regno||'—'}</span></td>
-        <td>${r.email||'—'}</td>
-        <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.73rem">${r.user}</span></td>
-        <td>${r.clsName||'<span style="color:var(--gray-md)">—</span>'}</td>
+        <td>${r.sex||'—'}</td>
+        <td style="font-size:0.74rem;color:var(--gray-md)">${r.stream||'—'}</td>
+        <td><span class="badge ${r.clsStat.toLowerCase().includes('fresh')?'b-info':'b-gray'}" style="font-size:0.65rem">${r.clsStat||'—'}</span></td>
       </tr>`).join('')}
-      ${rows.length>20?`<tr><td colspan="6" style="text-align:center;color:var(--gray-md);font-style:italic;padding:10px;">... and ${rows.length-20} more</td></tr>`:''}
+      ${rows.length>25?`<tr><td colspan="6" style="text-align:center;color:var(--gray-md);font-style:italic;padding:10px;">… and ${rows.length-25} more students</td></tr>`:''}
       </tbody>
     </table></div>
+    <div class="alert alert-info" style="margin:10px 0 0;">
+      ℹ Students will login with their <strong>Reg No</strong> + default password <strong>1234</strong>. They must reset it on first login.
+    </div>
   </div>`;
-  if(errors.length){
-    html+=`<div class="alert alert-warn" style="margin-top:10px;">⚠ Skipped rows: ${errors.join('; ')}</div>`;
-  }
+  if(errors.length) html+=`<div class="alert alert-warn" style="margin-top:8px;">⚠ Skipped: ${errors.join('; ')}</div>`;
   preview.innerHTML=html;
   if(acts) acts.style.display=rows.length>0?'flex':'none';
 }
@@ -1669,25 +1802,22 @@ function commitXlsUpload(){
   const overrideClass=document.getElementById('upload-class')?.value;
   let added=0,skipped=0;
   xlsRows.forEach(r=>{
-    if(DB.users.find(u=>u.username===r.user)){skipped++;return;}
-    // Resolve class
-    let classId=overrideClass||null;
-    if(!classId&&r.clsName){
-      const found=myDeptClasses().find(c=>c.name.toLowerCase().includes(r.clsName.toLowerCase())||r.clsName.toLowerCase().includes(c.name.toLowerCase()));
-      if(found)classId=found.id;
-    }
+    // Deduplicate by regNo (primary) or username
+    if(DB.users.find(u=>u.regNo&&u.regNo.toLowerCase()===r.regno.toLowerCase())){skipped++;return;}
+    let uname=r.username,sfx=2;
+    while(DB.users.find(u=>u.username===uname)){uname=r.username+sfx;sfx++;}
+    const classId=overrideClass||null;
     DB.users.push({
-      id:uid(),username:r.user,password:r.pass,role:'student',
-      name:r.name,email:r.email,deptId:CU.deptId,
-      regNo:r.regno,classId
+      id:uid(),username:uname,password:'1234',mustReset:true,
+      role:'student',name:r.name,sex:r.sex,stream:r.stream,
+      status:r.status,dateRegistered:r.dateReg,classStatus:r.clsStat,
+      email:'',deptId:CU.deptId,regNo:r.regno,classId
     });
     added++;
   });
   saveDB();
-  toast(`✅ ${added} student(s) registered${skipped?`, ${skipped} skipped (duplicate username)`:''}.`);
-  xlsRows=[];
-  clearXlsUpload();
-  navTo('students');
+  toast(`✅ ${added} student(s) imported${skipped?` — ${skipped} already exist`:''}.`);
+  xlsRows=[];clearXlsUpload();navTo('students');
 }
 function clearXlsUpload(){
   xlsRows=[];
@@ -1696,14 +1826,23 @@ function clearXlsUpload(){
   const inp=document.getElementById('xls-input');if(inp)inp.value='';
 }
 function downloadTemplate(){
-  const ws=XLSX.utils.aoa_to_sheet([
-    ['RegNo','Name','Email','Username','Password','Class'],
-    ['KIUT/CS/2024/001','Alice Mwangi','amwangi@kiut.ac.tz','amwangi','kiut2024','DCS Year 1'],
-    ['KIUT/CS/2024/002','Bob Kariuki','bkariuki@kiut.ac.tz','bkariuki','kiut2024','DCS Year 1'],
-  ]);
-  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Students');
-  XLSX.writeFile(wb,'KIUT_Student_Upload_Template.xlsx');
-  toast('Template downloaded.','info');
+  // Exact KIUT OSIM layout (matches CIT25-SEP_2026_class_list.xlsx)
+  const rows=[
+    ['KAMPALA INTERNATIONAL UNIVERSITY IN TANZANIA(KIUT)','','','','','','',''],
+    ['ONLINE STUDENTS INFORMATION MANAGEMENT-OSIM','','','','','','',''],
+    ['CIT25-SEP - Certificate - 2025/2026 - SEM-I','','','','','','',''],
+    ['CLASS:','Students Class Enrollment Summary - 1st Year','','','','','',''],
+    ['S/N','REG NO','FULL NAME','SEX','STREAM','STATUS','DATE REGISTERED','CLASS STATUS'],
+    [1,'CIT/35477/2501/DT','MKALA, Kelvin Mayala','M','STR-N-SESS-N','Registered-C','02-Dec-2025','Fresher(CONTINUING)'],
+    [2,'CIT/35484/2501/DT','WAYA, Witness Michael','F','STR-N-SESS-N','Registered-C','16-Dec-2025','Fresher(CONTINUING)'],
+    [3,'CIT/35497/2501/DT','SWALLEHE, Mariamu Ashirafu','F','STR-N-SESS-N','Registered-C','16-Dec-2025','Fresher(CONTINUING)'],
+  ];
+  const ws=XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols']=[{wch:5},{wch:22},{wch:30},{wch:5},{wch:16},{wch:14},{wch:18},{wch:22}];
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'Worksheet');
+  XLSX.writeFile(wb,'KIUT_OSIM_Student_Upload_Template.xlsx');
+  toast('KIUT OSIM template downloaded.','info');
 }
 
 // ═══════════════════════════════════════
@@ -1745,4 +1884,26 @@ function exportCSV(moduleId){
 //  INIT
 // ═══════════════════════════════════════
 loadDB();
-</script></body></html>
+</script>
+<!-- ══ PASSWORD RESET OVERLAY ══ -->
+<div id="pw-reset-overlay">
+  <div class="pwr-box">
+    <div class="pwr-title" id="pwr-title">Set Your Password</div>
+    <div class="pwr-sub" id="pwr-sub">
+      Your default password is <strong>1234</strong>. You must choose a new
+      password before you can use the system.
+    </div>
+    <div class="pwr-group">
+      <label>New Password</label>
+      <input type="password" id="pwr-new" placeholder="Minimum 6 characters"/>
+    </div>
+    <div class="pwr-group">
+      <label>Confirm New Password</label>
+      <input type="password" id="pwr-confirm" placeholder="Repeat new password"/>
+    </div>
+    <div class="pwr-err" id="pwr-err"></div>
+    <button class="pwr-btn" onclick="submitPasswordReset()">Save Password &amp; Continue →</button>
+    <button class="pwr-skip" id="pwr-skip" onclick="closeChangePassword()">Skip for now</button>
+  </div>
+</div>
+</body></html>
